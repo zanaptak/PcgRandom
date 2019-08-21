@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29209.62
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "PcgRandom.Tests", "PcgRandom.Tests.fsproj", "{2F25D5F2-5D0C-49A9-9A52-98F75823150B}"
+EndProject
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "PcgRandom", "..\..\src\PcgRandom\PcgRandom.fsproj", "{01806D13-A9C3-450B-91F2-5FB0450398DB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2F25D5F2-5D0C-49A9-9A52-98F75823150B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2F25D5F2-5D0C-49A9-9A52-98F75823150B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2F25D5F2-5D0C-49A9-9A52-98F75823150B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2F25D5F2-5D0C-49A9-9A52-98F75823150B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{01806D13-A9C3-450B-91F2-5FB0450398DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{01806D13-A9C3-450B-91F2-5FB0450398DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{01806D13-A9C3-450B-91F2-5FB0450398DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{01806D13-A9C3-450B-91F2-5FB0450398DB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {DDD2FBF2-9E0C-479F-A7BA-86441AEA951F}
+	EndGlobalSection
+EndGlobal

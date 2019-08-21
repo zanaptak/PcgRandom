@@ -1,0 +1,38 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;net452</TargetFrameworks>
+    <DisableImplicitSystemValueTupleReference>true</DisableImplicitSystemValueTupleReference>
+    <Version>0.1.0</Version>
+    <PackageId>Zanaptak.PcgRandom</PackageId>
+    <Authors>zanaptak</Authors>
+    <Product>Zanaptak.PcgRandom</Product>
+    <PackageTags>pcg;random;rng;prng;.net;fable</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <Description>A PCG pseudorandom number generator implementation for .NET and Fable. PCG (http://www.pcg-random.org/) is a family of simple fast space-efficient statistically good algorithms for random number generation.</Description>
+    <AssemblyName>Zanaptak.PcgRandom</AssemblyName>
+    <PackageProjectUrl>https://github.com/zanaptak/PcgRandom</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/zanaptak/PcgRandom.git</RepositoryUrl>
+    <PackageReleaseNotes>https://github.com/zanaptak/PcgRandom/releases</PackageReleaseNotes>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="Utils.fs" />
+    <Compile Include="BigintUtils.fs" />
+    <Compile Include="Pcg8.fs" />
+    <Compile Include="Pcg16.fs" />
+    <Compile Include="Pcg32.fs" />
+    <Compile Include="Pcg64.fs" />
+    <Compile Include="Pcg128.fs" />
+    <Compile Include="Pcg.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="*.fsproj; *.fs" PackagePath="fable\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Update="FSharp.Core" Version="4.3.4" />
+  </ItemGroup>
+
+</Project>
