@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net452</TargetFrameworks>
     <DisableImplicitSystemValueTupleReference>true</DisableImplicitSystemValueTupleReference>
-    <Version>0.1.1</Version>
+    <Version>0.1.2</Version>
     <Authors>zanaptak</Authors>
     <AssemblyName>Zanaptak.PcgRandom</AssemblyName>
     <Product>Zanaptak.PcgRandom</Product>

@@ -58,7 +58,6 @@ type Pcg( seed : int ) =
   override this.Next( maxExclusive : int ) = nextBoundedInt32 maxExclusive
   /// Returns a random 32-bit signed integer greater than or equal to the specified minimum and less than the specified maximum.
   override this.Next( minInclusive : int , maxExclusive : int ) = nextRangeInt32 minInclusive maxExclusive
-  override this.Sample() = nextDouble ()
   /// Returns a random double greater than or equal to 0.0 and less than 1.0.
   override this.NextDouble() = nextDouble ()
   /// Sets all bytes in the specified array to random bytes. Consumes multiple values from the generator if necessary to fill array.
