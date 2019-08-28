@@ -27,7 +27,7 @@ let randomValue = pcg.Next()
 
 ## Output sizes
 
-Additional classes are available for specific PCG generators at different unsigned integer output sizes. Without parameters, these use the default algorithms recommended by the [PCG paper](http://www.pcg-random.org/paper.html).
+Additional classes are available for specific PCG generators at different unsigned integer output sizes. Without parameters, these use the default algorithms recommended in the [PCG paper](http://www.pcg-random.org/paper.html).
 
 ### C#
 ```cs
@@ -69,11 +69,9 @@ The low-level variants defined by the PCG library are available via overloaded c
 
 The overall categories of variants are:
 
-`Normal`: General purpose variant balancing speed and statistical quality. Allows stream selection. Based on LCG generator type.
-
-`Fast`: Faster variant but with reduced statistical quality. Based on MCG generator type.
-
-`Invertible`: Variant with the same number of outbut bits as internal state bits. Easier to reverse-engineer internal state than other variants.
+* `Normal`: General purpose variant balancing speed and statistical quality. Allows stream selection. Based on LCG generator type.
+* `Fast`: Faster variant but with reduced statistical quality. Based on MCG generator type.
+* `Invertible`: Variant with the same number of outbut bits as internal state bits. Easier to reverse-engineer internal state than other variants.
 
 A `Pcg128` generator is available only as an Invertible variant; there are no Normal or Fast variants (which would require 256 bits of state) defined in the PCG source material.
 

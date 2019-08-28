@@ -28,7 +28,13 @@ type Pcg( seed : int ) =
       let bound = uint32 ( maxExc - minInc ) // math works due to overflow
       minInc + ( pcg32.Next( bound ) |> int )
 
-  let nextDouble () = ( pcg32.Next( UInt32.MaxValue ) |> float ) / float UInt32.MaxValue
+  let nextDouble () =
+    let rec loop () =
+      let r = pcg32.Next()
+      if r < UInt32.MaxValue then float r / float UInt32.MaxValue
+      else loop ()
+    loop ()
+
   let nextBytesCount , nextBytesFn = 4 , fun () -> BitConverter.GetBytes( pcg32.Next() )
 
   /// PCG-backed pseudorandom number generator compatible with System.Random.
@@ -57,4 +63,5 @@ type Pcg( seed : int ) =
   override this.NextDouble() = nextDouble ()
   /// Sets all bytes in the specified array to random bytes. Consumes multiple values from the generator if necessary to fill array.
   override this.NextBytes( bytes ) = nextBytes nextBytesFn nextBytesCount bytes
+
   #endif

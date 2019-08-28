@@ -1,19 +1,19 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net452</TargetFrameworks>
     <DisableImplicitSystemValueTupleReference>true</DisableImplicitSystemValueTupleReference>
-    <Version>0.1.0</Version>
-    <PackageId>Zanaptak.PcgRandom</PackageId>
+    <Version>0.1.1</Version>
     <Authors>zanaptak</Authors>
+    <AssemblyName>Zanaptak.PcgRandom</AssemblyName>
     <Product>Zanaptak.PcgRandom</Product>
+    <PackageId>Zanaptak.PcgRandom</PackageId>
+    <RepositoryUrl>https://github.com/zanaptak/PcgRandom.git</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/zanaptak/PcgRandom</PackageProjectUrl>
+    <PackageReleaseNotes>https://github.com/zanaptak/PcgRandom/releases</PackageReleaseNotes>
     <PackageTags>pcg;random;rng;prng;.net;fable</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Description>A PCG pseudorandom number generator implementation for .NET and Fable. PCG (http://www.pcg-random.org/) is a family of simple fast space-efficient statistically good algorithms for random number generation.</Description>
-    <AssemblyName>Zanaptak.PcgRandom</AssemblyName>
-    <PackageProjectUrl>https://github.com/zanaptak/PcgRandom</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/zanaptak/PcgRandom.git</RepositoryUrl>
-    <PackageReleaseNotes>https://github.com/zanaptak/PcgRandom/releases</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>

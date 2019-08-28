@@ -2,9 +2,10 @@
 #   https://docs.microsoft.com/en-us/powershell/scripting/install/installing-powershell
 # Install Invoke-Build:
 #   https://github.com/nightroman/Invoke-Build
-# At a PS prompt, run any build task, e.g.:
-#   Invoke-Build Build
-#   Invoke-Build Test
+# (Optional) Add "Set-Alias ib Invoke-Build" to your PS profile.
+# At a PS prompt, run any build task (optionally use "ib" alias):
+#   Invoke-Build build
+#   Invoke-Build test
 #   Invoke-Build ?  # this lists available tasks
 
 task Clean {
