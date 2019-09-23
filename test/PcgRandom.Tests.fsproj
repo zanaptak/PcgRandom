@@ -25,7 +25,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\PcgRandom\PcgRandom.fsproj" />
+    <ProjectReference Include="..\src\PcgRandom.fsproj" />
   </ItemGroup>
 
 </Project>

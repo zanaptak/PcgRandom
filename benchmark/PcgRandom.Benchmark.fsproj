@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="Program.fs" />
+    <Compile Include="Benchmark.fs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -14,9 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="Zanaptak.PcgRandom">
-      <HintPath>..\src\PcgRandom\bin\Release\netstandard2.0\Zanaptak.PcgRandom.dll</HintPath>
-    </Reference>
+    <ProjectReference Include="..\src\PcgRandom.fsproj" />
   </ItemGroup>
 
 </Project>

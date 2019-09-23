@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29209.62
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "PcgRandom.Benchmark", "PcgRandom.Benchmark.fsproj", "{810513A0-4AA3-4325-964F-D744840F6E66}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "PcgRandom.Benchmark", "PcgRandom.Benchmark.fsproj", "{810513A0-4AA3-4325-964F-D744840F6E66}"
+EndProject
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "PcgRandom", "..\src\PcgRandom.fsproj", "{6EA3F963-B79C-4B4C-A67A-F050BB279D22}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{810513A0-4AA3-4325-964F-D744840F6E66}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{810513A0-4AA3-4325-964F-D744840F6E66}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{810513A0-4AA3-4325-964F-D744840F6E66}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6EA3F963-B79C-4B4C-A67A-F050BB279D22}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6EA3F963-B79C-4B4C-A67A-F050BB279D22}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6EA3F963-B79C-4B4C-A67A-F050BB279D22}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6EA3F963-B79C-4B4C-A67A-F050BB279D22}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

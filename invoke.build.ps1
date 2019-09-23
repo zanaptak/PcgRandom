@@ -21,13 +21,14 @@ task Pack Clean, Build, {
 }
 
 task TestJs {
-  Set-Location test\PcgRandom.Tests
-  remove build
+  Set-Location .\test
+  if ( -not ( Test-Path node_modules ) ) { exec { npm install } }
+  remove bld
   exec { npm test }
 }
 
 task TestNet Clean, Build, {
-  Set-Location test\PcgRandom.Tests
+  Set-Location .\test
   exec { dotnet run -c Release }
 }
 
