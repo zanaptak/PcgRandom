@@ -2,6 +2,7 @@ module internal Zanaptak.PcgRandom.BigintUtils
 
 open System
 open System.Numerics
+open Zanaptak.PcgRandom.Utils
 
 let PCG_128BIT_CONSTANT ( hi : uint64 ) ( lo : uint64 ) = ( bigint hi <<< 64 ) + bigint lo
 
@@ -29,7 +30,8 @@ let inline pcg_mcg_128_step_r ( state : bigint ) =
   state * PCG_DEFAULT_MULTIPLIER_128 |> truncate128
 
 let seed128 () =
-  let seedGen = System.Random()
-  // use only 31 bits of each part since high bit is always 0
-  let seedParts = Array.init 5 ( fun _ -> seedGen.Next() |> bigint )
-  seedParts |> Array.reduce ( fun a b -> a <<< 31 ||| ( b &&& bigintMaxInt32 ) ) |> truncate128
+  let bytes = Array.create 16 0uy
+  getSeedBytes bytes
+  let hi = BitConverter.ToUInt64( bytes , 0 )
+  let lo = BitConverter.ToUInt64( bytes , 8 )
+  PCG_128BIT_CONSTANT hi lo

@@ -539,12 +539,18 @@ let pcgTests =
   testList "Pcg methods" [
     testCase "Next()" <| fun () ->
       Expect.equal ( Pcg( 12345 ).Next() ) 1411482639 ""
+    testCase "Next(Int32.MaxValue) same as Next()" <| fun () ->
+      Expect.equal ( Pcg( 12345 ).Next( Int32.MaxValue ) ) 1411482639 ""
     testCase "NextDouble()" <| fun () ->
       Expect.equal ( Pcg( 12345 ).NextDouble() ) 0.32863641142114913 ""
     testCase "NextBytes()" <| fun () ->
       let bytes : byte array = Array.zeroCreate 5
       Pcg( 12345 ).NextBytes( bytes )
       Expect.equal bytes [| 15uy ; 132uy ; 33uy ; 84uy ; 155uy |] ""
+    testCase "NextBytes() offset " <| fun () ->
+      let bytes : byte array = Array.zeroCreate 7
+      Pcg( 12345 ).NextBytes( bytes , 1 , 5 )
+      Expect.equal bytes [| 0uy ; 15uy ; 132uy ; 33uy ; 84uy ; 155uy ; 0uy |] ""
     testCase "Next() 22 items" <| fun () ->
       let p = Pcg( 12345 )
       let expected =
@@ -553,6 +559,14 @@ let pcgTests =
           1726705447; 1043933343; 1500908903; 640134120; 1028161106;
           1997943676; 1123590394; 1757611379; 553427003; 988897843|]
       Expect.equal ( Array.init 22 ( fun _ -> p.Next() ) ) expected ""
+    testCase "Next(Int32.MaxValue) same as Next() 22 items" <| fun () ->
+      let p = Pcg( 12345 )
+      let expected =
+        [|1411482639; 1017708956; 1213308536; 285554700; 628889468; 1631147903;
+          283047574; 357275135; 1116223725; 866116730; 1421996083; 1466704544;
+          1726705447; 1043933343; 1500908903; 640134120; 1028161106;
+          1997943676; 1123590394; 1757611379; 553427003; 988897843|]
+      Expect.equal ( Array.init 22 ( fun _ -> p.Next( Int32.MaxValue ) ) ) expected ""
     testCase "Next(100) 10 items" <| fun () ->
       let p = Pcg( 12345 )
       let expected = [|39; 3; 83; 47; 68; 50; 21; 82; 25; 77|]
@@ -561,6 +575,18 @@ let pcgTests =
       let p = Pcg( 12345 )
       let expected = [|39; 3; 83; 47; 68; 50; 21; 82; 25; 77|]
       Expect.equal ( Array.init 10 ( fun _ -> p.Next(0,100) ) ) expected ""
+    testCase "Next(-3,3) in range" <| fun () ->
+      let p = Pcg( 12345 )
+      let actual = Seq.init 999 ( fun _ -> p.Next( -3 , 3 ) ) |> Seq.distinct |> Seq.toArray |> Array.sort
+      let expected = [| -3 ; -2 ; -1 ; 0 ; 1 ; 2 |]
+      Expect.equal actual expected ""
+    testCase "diff output from random seeds" <| fun () ->
+      // should differ due to crypto seeding, infinitesimal chance of seed collision
+      let p1 = Pcg()
+      let p2 = Pcg()
+      let r1 = Array.init 22 ( fun _ -> p1.Next() )
+      let r2 = Array.init 22 ( fun _ -> p2.Next() )
+      Expect.notEqual r1 r2 ""
   ]
 
 let pcg8Tests =
@@ -579,6 +605,18 @@ let pcg8Tests =
       let p8 = Pcg8( 1234us )
       let expected = [|30uy; 54uy; 94uy; 48uy; 69uy; 92uy; 89uy; 57uy; 23uy; 87uy|]
       Expect.equal ( Array.init 10 ( fun _ -> p8.Next( 0uy , 100uy ) ) ) expected ""
+    testCase "Next(3,9) in range" <| fun () ->
+      let p = Pcg8( 1234us )
+      let actual = Seq.init 999 ( fun _ -> p.Next( 3uy , 9uy ) ) |> Seq.distinct |> Seq.toArray |> Array.sort
+      let expected = [| 3uy ; 4uy ; 5uy ; 6uy ; 7uy ; 8uy |]
+      Expect.equal actual expected ""
+    testCase "diff output from random seeds" <| fun () ->
+      // should differ due to crypto seeding, infinitesimal chance of seed collision
+      let p1 = Pcg8()
+      let p2 = Pcg8()
+      let r1 = Array.init 22 ( fun _ -> p1.Next() )
+      let r2 = Array.init 22 ( fun _ -> p2.Next() )
+      Expect.notEqual r1 r2 ""
   ]
 
 let pcg16Tests =
@@ -597,6 +635,18 @@ let pcg16Tests =
       let p16 = Pcg16( 1234567u )
       let expected = [|68us; 48us; 50us; 84us; 45us; 44us; 33us; 23us; 20us; 93us|]
       Expect.equal ( Array.init 10 ( fun _ -> p16.Next( 0us , 100us ) ) ) expected ""
+    testCase "Next(3,9) in range" <| fun () ->
+      let p = Pcg16( 1234567u )
+      let actual = Seq.init 999 ( fun _ -> p.Next( 3us , 9us ) ) |> Seq.distinct |> Seq.toArray |> Array.sort
+      let expected = [| 3us ; 4us ; 5us ; 6us ; 7us ; 8us |]
+      Expect.equal actual expected ""
+    testCase "diff output from random seeds" <| fun () ->
+      // should differ due to crypto seeding, infinitesimal chance of seed collision
+      let p1 = Pcg16()
+      let p2 = Pcg16()
+      let r1 = Array.init 22 ( fun _ -> p1.Next() )
+      let r2 = Array.init 22 ( fun _ -> p2.Next() )
+      Expect.notEqual r1 r2 ""
   ]
 
 let pcg32Tests =
@@ -623,6 +673,18 @@ let pcg32Tests =
       let p32 = Pcg32( 1234567890987UL )
       let expected = [|20u; 16u; 57u; 98u; 54u; 27u; 64u; 42u; 13u; 58u|]
       Expect.equal ( Array.init 10 ( fun _ -> p32.Next( 0u , 100u ) ) ) expected ""
+    testCase "Next(3,9) in range" <| fun () ->
+      let p = Pcg32( 1234567890987UL )
+      let actual = Seq.init 999 ( fun _ -> p.Next( 3u , 9u ) ) |> Seq.distinct |> Seq.toArray |> Array.sort
+      let expected = [| 3u ; 4u ; 5u ; 6u ; 7u ; 8u |]
+      Expect.equal actual expected ""
+    testCase "diff output from random seeds" <| fun () ->
+      // should differ due to crypto seeding, infinitesimal chance of seed collision
+      let p1 = Pcg32()
+      let p2 = Pcg32()
+      let r1 = Array.init 22 ( fun _ -> p1.Next() )
+      let r2 = Array.init 22 ( fun _ -> p2.Next() )
+      Expect.notEqual r1 r2 ""
   ]
 
 let pcg64Tests =
@@ -641,6 +703,18 @@ let pcg64Tests =
       let p64 = Pcg64( 1234567890987654321012345I )
       let expected = [|47UL; 51UL; 96UL; 52UL; 49UL; 84UL; 59UL; 24UL; 90UL; 52UL|]
       Expect.equal ( Array.init 10 ( fun _ -> p64.Next( 0UL , 100UL ) ) ) expected ""
+    testCase "Next(3,9) in range" <| fun () ->
+      let p = Pcg64( 1234567890987654321012345I )
+      let actual = Seq.init 999 ( fun _ -> p.Next( 3UL , 9UL ) ) |> Seq.distinct |> Seq.toArray |> Array.sort
+      let expected = [| 3UL ; 4UL ; 5UL ; 6UL ; 7UL ; 8UL |]
+      Expect.equal actual expected ""
+    testCase "diff output from random seeds" <| fun () ->
+      // should differ due to crypto seeding, infinitesimal chance of seed collision
+      let p1 = Pcg64()
+      let p2 = Pcg64()
+      let r1 = Array.init 22 ( fun _ -> p1.Next() )
+      let r2 = Array.init 22 ( fun _ -> p2.Next() )
+      Expect.notEqual r1 r2 ""
   ]
 
 let pcg128InvertibleTests =
@@ -659,17 +733,30 @@ let pcg128InvertibleTests =
       let p128 = Pcg128( Pcg128Variants.Invertible.Default , 1234567890987654321012345I )
       let expected = [|67I; 95I; 32I; 8I; 9I; 52I; 19I; 52I; 58I; 40I|]
       Expect.equal ( Array.init 10 ( fun _ -> p128.Next( 0I , 100I ) ) ) expected ""
+    testCase "Next(3,9) in range" <| fun () ->
+      let p = Pcg128( Pcg128Variants.Invertible.Default , 1234567890987654321012345I )
+      let actual = Seq.init 999 ( fun _ -> p.Next( 3I , 9I ) ) |> Seq.distinct |> Seq.toArray |> Array.sort
+      let expected = [| 3I ; 4I ; 5I ; 6I ; 7I ; 8I |]
+      Expect.equal actual expected ""
+    testCase "diff output from random seeds" <| fun () ->
+      // should differ due to crypto seeding, infinitesimal chance of seed collision
+      let p1 = Pcg128( Pcg128Variants.Invertible.Default )
+      let p2 = Pcg128( Pcg128Variants.Invertible.Default )
+      let r1 = Array.init 22 ( fun _ -> p1.Next() )
+      let r2 = Array.init 22 ( fun _ -> p2.Next() )
+      Expect.notEqual r1 r2 ""
   ]
 
-let allTests = testList "All" [
-  //thresholdTests
-  maxSeedValuesTests
-  customSeedTests
-  referenceSeedTests
-  pcgTests
-  pcg8Tests
-  pcg16Tests
-  pcg32Tests
-  pcg64Tests
-  pcg128InvertibleTests
-]
+let allTests =
+  testList "All" [
+    //thresholdTests
+    maxSeedValuesTests
+    customSeedTests
+    referenceSeedTests
+    pcgTests
+    pcg8Tests
+    pcg16Tests
+    pcg32Tests
+    pcg64Tests
+    pcg128InvertibleTests
+  ]

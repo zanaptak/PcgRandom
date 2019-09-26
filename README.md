@@ -98,8 +98,10 @@ See the [benchmark project](https://github.com/zanaptak/PcgRandom/tree/master/be
 
 ## Notes
 
-* Internal calculations are based on the [PCG reference C implementation](https://github.com/imneme/pcg-c), which is available under the [MIT License](https://github.com/imneme/pcg-c/blob/master/LICENSE-MIT.txt).
+- Internal calculations are based on the [PCG reference C implementation](https://github.com/imneme/pcg-c), which is available under the [MIT License](https://github.com/imneme/pcg-c/blob/master/LICENSE-MIT.txt).
 
-* The specific output size versions (`Pcg8`, `Pcg16`, etc.) intentionally exclude the `NextDouble()` method; proper unbiased double generation is not a goal of this library. The basic `Pcg` class does provide a trivial implementation (random UInt32 divided by max UInt32) to satisfy the System.Random interface.
+- Variants that use 128 bit arithmetic are much slower than other variants because they use [`System.Numerics.BigInteger`](https://docs.microsoft.com/en-us/dotnet/api/system.numerics.biginteger?view=netstandard-2.0) instead of primitive integer types. These can be identified by their constructors taking `BigInteger` seed values; they include the `Pcg64 Normal`, `Pcg64 Fast`, and `Pcg128 Invertible` variants.
 
-* These generators use internal mutable state and do not implement any thread safety mechanisms.
+- The specific output size versions (`Pcg8`, `Pcg16`, etc.) intentionally exclude the `NextDouble()` method; proper unbiased double generation is not a goal of this library. The basic `Pcg` class does provide a trivial implementation (random UInt32 divided by max UInt32) to satisfy the System.Random interface.
+
+- These generators use internal mutable state and do not implement any thread safety mechanisms.

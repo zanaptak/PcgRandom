@@ -37,7 +37,12 @@ type Pcg32 internal ( name : string , nextFn : unit -> uint32 ) =
     let word = multiply32 ( ( state >>> ( ( state >>> 28 |> int ) + 4 ) ) ^^^ state ) 277803737u
     ( word >>> 22 ) ^^^ word
 
-  let nextBytesCount , nextBytesFn = 4 , nextFn >> BitConverter.GetBytes
+  let nextBytes ( bytes : byte array ) startIndex length =
+    let endIndex = startIndex + length - 1
+    for i in startIndex .. 4 .. endIndex do
+      let randVal = nextFn ()
+      for j in 0 .. min 3 ( endIndex - i ) do
+        bytes.[ i + j ] <- randVal >>> ( j * 8 ) |> byte
 
   /// PCG 32-bit pseudorandom number generator
   private new ( variant : Normal , seed : uint64 , streamOpt : uint64 option ) =
@@ -128,29 +133,50 @@ type Pcg32 internal ( name : string , nextFn : unit -> uint32 ) =
   /// PCG 32-bit pseudorandom number generator
   new () = Pcg32( Normal.Default , seed64 () , None )
 
-  /// Sets all bytes in the specified array to random bytes. Consumes multiple values from the generator if necessary to fill array.
-  member this.NextBytes( bytes ) = nextBytes nextBytesFn nextBytesCount bytes
+  override this.ToString() = name
+
   /// Returns a random 32-bit unsigned integer greater than or equal to the specified minimum and less than the specified maximum.
   member this.Next( minInclusive : uint32 , maxExclusive : uint32 ) =
-    if minInclusive > maxExclusive then
-      raise ( System.ArgumentException( "minInclusive cannot be greater than maxExclusive" ) )
-    elif minInclusive = maxExclusive then minInclusive
-    else
+    if maxExclusive > minInclusive then
       let bound = maxExclusive - minInclusive
       let threshold = ( uint32 -( int32 bound ) ) % bound
       let rec loop () =
         let r = nextFn ()
         if r >= threshold then r % bound + minInclusive else loop ()
       loop ()
+    elif minInclusive = maxExclusive then minInclusive
+    else raise ( ArgumentException( "minInclusive cannot be greater than maxExclusive" ) )
+
   /// Returns a random 32-bit unsigned integer less than the specified maximum.
   member this.Next( maxExclusive : uint32 ) =
-    if maxExclusive = 0u then 0u
-    else
+    if maxExclusive > 0u then
       let threshold = ( uint32 -( int32 maxExclusive ) ) % maxExclusive
       let rec loop () =
         let r = nextFn ()
         if r >= threshold then r % maxExclusive else loop ()
       loop ()
+    else 0u
+
   /// Returns a random 32-bit unsigned integer.
   member this.Next() = nextFn ()
-  override this.ToString() = name
+
+  /// Sets all bytes in the specified array to random bytes. Consumes multiple values from the generator if necessary.
+  member this.NextBytes( bytes : byte array ) =
+    if ( not ( isNull bytes ) ) && bytes.Length > 0 then
+      nextBytes bytes 0 bytes.Length
+    elif isNull bytes then
+      raise ( ArgumentException( "byte array cannot be null" ) )
+    else ()
+
+  /// Sets the specified bytes in the specified array to random bytes. Consumes multiple values from the generator if necessary.
+  member this.NextBytes( bytes : byte array , startIndex , length ) =
+    if ( not ( isNull bytes ) ) && startIndex >= 0 && length > 0 && ( startIndex + length ) <= bytes.Length then
+      nextBytes bytes startIndex length
+    elif isNull bytes then
+      raise ( ArgumentException( "byte array cannot be null" ) )
+    elif startIndex < 0 || startIndex >= bytes.Length then
+      raise ( ArgumentOutOfRangeException( "start index must be within array bounds" ) )
+    elif ( startIndex + length ) > bytes.Length then
+      raise ( ArgumentException( "length parameter must not exceed number of elements from start index to end of array" ) )
+    else ()
+

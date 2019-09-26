@@ -27,10 +27,12 @@ type Pcg128 internal ( name : string , nextFn : unit -> bigint ) =
     let newhigh = rotateRight64 high ( newlow &&& 63UL |> int )
     ( bigint newhigh ) <<< 64 ||| bigint newlow
 
-  let nextBytesCount , nextBytesFn = 16 , ( fun () ->
-    let hi , lo = nextFn() |> bigintToHiLoUInt64
-    Array.concat [| BitConverter.GetBytes lo ; BitConverter.GetBytes hi |]
-  )
+  let nextBytes ( bytes : byte array ) startIndex length =
+    let endIndex = startIndex + length - 1
+    for i in startIndex .. 16 .. endIndex do
+      let randVal = nextFn ()
+      for j in 0 .. min 15 ( endIndex - i ) do
+        bytes.[ i + j ] <- ( randVal >>> ( j * 8 ) ) &&& 255I |> byte
 
   /// PCG 128-bit pseudorandom number generator
   private new ( variant : Invertible , seed : bigint , streamOpt : bigint option ) =
@@ -62,24 +64,52 @@ type Pcg128 internal ( name : string , nextFn : unit -> bigint ) =
   /// PCG 128-bit pseudorandom number generator
   new ( variant : Invertible ) = Pcg128( variant , seed128 () , None )
 
-  /// Sets all bytes in the specified array to random bytes. Consumes multiple values from the generator if necessary to fill array.
-  member this.NextBytes( bytes ) = nextBytes nextBytesFn nextBytesCount bytes
+  override this.ToString() = name
+
   /// Returns a random 128-bit unsigned integer greater than or equal to the specified minimum and less than the specified maximum.
   member this.Next( minInclusive : bigint , maxExclusive : bigint ) =
-    if maxExclusive < BigInteger.Zero then raise ( ArgumentException( "maxExclusive cannot be less than 0" ) )
-    elif minInclusive < BigInteger.Zero then raise ( ArgumentException( "minInclusive cannot be less than 0" ) )
-    elif minInclusive > maxExclusive then
-      raise ( System.ArgumentException( "minInclusive cannot be greater than maxExclusive" ) )
-    elif minInclusive = maxExclusive then minInclusive
-    else
+    if maxExclusive > minInclusive && minInclusive >= BigInteger.Zero then
       let bound = maxExclusive - minInclusive
       let threshold = ( bigintMaxUInt128Plus1 ) % bound
       let rec loop () =
         let r = nextFn ()
         if r >= threshold then r % bound + minInclusive else loop ()
       loop ()
+    elif minInclusive < BigInteger.Zero then raise ( ArgumentException( "minInclusive cannot be less than 0" ) )
+    elif minInclusive = maxExclusive then minInclusive
+    else raise ( ArgumentException( "minInclusive cannot be greater than maxExclusive" ) )
+
   /// Returns a random 128-bit unsigned integer less than the specified maximum.
-  member this.Next( maxExclusive : bigint ) = this.Next( BigInteger.Zero , maxExclusive )
+  member this.Next( maxExclusive : bigint ) =
+    if maxExclusive > BigInteger.Zero then
+      let threshold = ( bigintMaxUInt128Plus1 ) % maxExclusive
+      let rec loop () =
+        let r = nextFn ()
+        if r >= threshold then r % maxExclusive else loop ()
+      loop ()
+    elif maxExclusive < BigInteger.Zero then raise ( ArgumentException( "maxExclusive cannot be less than 0" ) )
+    else BigInteger.Zero
+
   /// Returns a random 128-bit unsigned integer.
   member this.Next() = nextFn ()
-  override this.ToString() = name
+
+  /// Sets all bytes in the specified array to random bytes. Consumes multiple values from the generator if necessary.
+  member this.NextBytes( bytes : byte array ) =
+    if ( not ( isNull bytes ) ) && bytes.Length > 0 then
+      nextBytes bytes 0 bytes.Length
+    elif isNull bytes then
+      raise ( ArgumentException( "byte array cannot be null" ) )
+    else ()
+
+  /// Sets the specified bytes in the specified array to random bytes. Consumes multiple values from the generator if necessary.
+  member this.NextBytes( bytes : byte array , startIndex , length ) =
+    if ( not ( isNull bytes ) ) && startIndex >= 0 && length > 0 && ( startIndex + length ) <= bytes.Length then
+      nextBytes bytes startIndex length
+    elif isNull bytes then
+      raise ( ArgumentException( "byte array cannot be null" ) )
+    elif startIndex < 0 || startIndex >= bytes.Length then
+      raise ( ArgumentOutOfRangeException( "start index must be within array bounds" ) )
+    elif ( startIndex + length ) > bytes.Length then
+      raise ( ArgumentException( "length parameter must not exceed number of elements from start index to end of array" ) )
+    else ()
+

@@ -1,59 +1,63 @@
 # Benchmarks
 
-Below is a benchmark run with several Pcg variants and System.Random for comparison.
-
-Note that Pcg64 and Pcg128 are slow due to 128-bit arithmetic on the internal state (using System.Numerics.BigInteger).
-
-The Fast variant at 32-bits seems it may not have enough difference in the algorithm to overcome the implementation overhead and/or environmental noise.
-
 ## Environment
 
 ``` ini
 BenchmarkDotNet=v0.11.5, OS=Windows 10.0.18362
 Intel Core i7-4790K CPU 4.00GHz (Haswell), 1 CPU, 8 logical and 4 physical cores
-.NET Core SDK=2.2.401
-  [Host]     : .NET Core 2.2.6 (CoreCLR 4.6.27817.03, CoreFX 4.6.27818.02), 64bit RyuJIT DEBUG
-  DefaultJob : .NET Core 2.2.6 (CoreCLR 4.6.27817.03, CoreFX 4.6.27818.02), 64bit RyuJIT
+.NET Core SDK=3.0.100
+  [Host]     : .NET Core 3.0.0 (CoreCLR 4.700.19.46205, CoreFX 4.700.19.46214), 64bit RyuJIT DEBUG
+  DefaultJob : .NET Core 3.0.0 (CoreCLR 4.700.19.46205, CoreFX 4.700.19.46214), 64bit RyuJIT
 ```
 
-## Results for calling method x.Next()
+## Calling method x.Next()
 
-|            Method |         Mean |     Error |    StdDev |
-|------------------ |-------------:|----------:|----------:|
-|      SystemRandom |     7.185 ns | 0.0398 ns | 0.0373 ns |
-|               Pcg |     6.736 ns | 0.0463 ns | 0.0411 ns |
-|             Pcg32 |     3.336 ns | 0.0467 ns | 0.0437 ns |
-|        Pcg32_Fast |     3.458 ns | 0.0270 ns | 0.0211 ns |
-|  Pcg32_Invertible |     3.098 ns | 0.0278 ns | 0.0247 ns |
-|             Pcg64 |   834.122 ns | 6.0910 ns | 5.6975 ns |
-|        Pcg64_Fast |   770.894 ns | 6.6217 ns | 6.1939 ns |
-|  Pcg64_Invertible |     3.156 ns | 0.0190 ns | 0.0169 ns |
-| Pcg128_Invertible | 1,057.431 ns | 7.0344 ns | 6.2358 ns |
+|           Method |     Mean |     Error |    StdDev |
+|----------------- |---------:|----------:|----------:|
+|     SystemRandom | 6.762 ns | 0.0210 ns | 0.0197 ns |
+|              Pcg | 5.668 ns | 0.0323 ns | 0.0287 ns |
+|            Pcg32 | 3.522 ns | 0.0917 ns | 0.0901 ns |
+|       Pcg32_Fast | 3.307 ns | 0.0065 ns | 0.0061 ns |
+| Pcg32_Invertible | 2.928 ns | 0.0065 ns | 0.0057 ns |
+| Pcg64_Invertible | 3.190 ns | 0.0085 ns | 0.0080 ns |
 
-## Results for calling method x.Next(100)
+## Calling method x.Next(100)
 
-|            Method |         Mean |      Error |     StdDev |       Median |
-|------------------ |-------------:|-----------:|-----------:|-------------:|
-|      SystemRandom |     9.668 ns |  0.0529 ns |  0.0495 ns |     9.671 ns |
-|               Pcg |    12.184 ns |  0.1093 ns |  0.1022 ns |    12.173 ns |
-|             Pcg32 |    11.304 ns |  0.2517 ns |  0.5578 ns |    11.013 ns |
-|        Pcg32_Fast |    10.907 ns |  0.1017 ns |  0.0951 ns |    10.872 ns |
-|  Pcg32_Invertible |     9.845 ns |  0.0761 ns |  0.0712 ns |     9.841 ns |
-|             Pcg64 |   848.677 ns |  7.7337 ns |  7.2341 ns |   849.135 ns |
-|        Pcg64_Fast |   787.962 ns |  4.8762 ns |  4.3226 ns |   787.300 ns |
-|  Pcg64_Invertible |    18.877 ns |  0.0963 ns |  0.0901 ns |    18.873 ns |
-| Pcg128_Invertible | 1,653.513 ns | 15.4690 ns | 14.4697 ns | 1,647.583 ns |
+|           Method |      Mean |     Error |    StdDev |
+|----------------- |----------:|----------:|----------:|
+|     SystemRandom |  9.887 ns | 0.0186 ns | 0.0165 ns |
+|              Pcg | 11.229 ns | 0.0094 ns | 0.0083 ns |
+|            Pcg32 | 10.154 ns | 0.0173 ns | 0.0145 ns |
+|       Pcg32_Fast |  9.991 ns | 0.0130 ns | 0.0101 ns |
+| Pcg32_Invertible |  9.707 ns | 0.0141 ns | 0.0118 ns |
+| Pcg64_Invertible | 17.473 ns | 0.3754 ns | 0.7583 ns |
 
-## Results for calling method x.Next(0,100)
+## Calling method x.Next(0,100)
 
-|            Method |        Mean |      Error |     StdDev |
-|------------------ |------------:|-----------:|-----------:|
-|      SystemRandom |    10.03 ns |  0.0732 ns |  0.0685 ns |
-|               Pcg |    12.26 ns |  0.0634 ns |  0.0529 ns |
-|             Pcg32 |    11.32 ns |  0.1093 ns |  0.1023 ns |
-|        Pcg32_Fast |    11.46 ns |  0.1044 ns |  0.0976 ns |
-|  Pcg32_Invertible |    10.61 ns |  0.0532 ns |  0.0471 ns |
-|             Pcg64 |   853.73 ns |  5.2473 ns |  4.3818 ns |
-|        Pcg64_Fast |   792.05 ns |  8.4213 ns |  7.8773 ns |
-|  Pcg64_Invertible |    17.91 ns |  0.0794 ns |  0.0620 ns |
-| Pcg128_Invertible | 1,641.20 ns | 13.8302 ns | 12.9367 ns |
+|           Method |     Mean |     Error |    StdDev |
+|----------------- |---------:|----------:|----------:|
+|     SystemRandom | 10.07 ns | 0.0957 ns | 0.0848 ns |
+|              Pcg | 11.70 ns | 0.0084 ns | 0.0075 ns |
+|            Pcg32 | 10.63 ns | 0.0242 ns | 0.0202 ns |
+|       Pcg32_Fast | 10.70 ns | 0.0961 ns | 0.0852 ns |
+| Pcg32_Invertible | 10.40 ns | 0.1108 ns | 0.0925 ns |
+| Pcg64_Invertible | 17.43 ns | 0.1027 ns | 0.0960 ns |
+
+## Calling method x.NextBytes() with 99 byte array
+
+|           Method |     Mean |     Error |    StdDev |
+|----------------- |---------:|----------:|----------:|
+|     SystemRandom | 588.1 ns | 0.7290 ns | 0.6462 ns |
+|              Pcg | 309.3 ns | 0.5091 ns | 0.4762 ns |
+|            Pcg32 | 324.6 ns | 0.3245 ns | 0.2877 ns |
+|       Pcg32_Fast | 318.3 ns | 0.4513 ns | 0.4222 ns |
+| Pcg32_Invertible | 312.2 ns | 0.4364 ns | 0.3868 ns |
+| Pcg64_Invertible | 224.1 ns | 0.2977 ns | 0.2639 ns |
+
+## Calling method x.Next() -- variants using 128 bit operations
+
+|            Method |     Mean |    Error |   StdDev |
+|------------------ |---------:|---------:|---------:|
+|             Pcg64 | 719.6 ns | 2.029 ns | 1.898 ns |
+|        Pcg64_Fast | 653.3 ns | 2.021 ns | 1.791 ns |
+| Pcg128_Invertible | 908.0 ns | 1.516 ns | 1.418 ns |

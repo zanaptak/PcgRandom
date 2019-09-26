@@ -17,6 +17,7 @@ namespace Zanaptak.PcgRandom.Pcg8Variants
     | Default
 
 namespace Zanaptak.PcgRandom
+open System
 open Zanaptak.PcgRandom.Utils
 open Zanaptak.PcgRandom.Pcg8Variants
 
@@ -32,7 +33,9 @@ type Pcg8 private ( name : string , nextFn : unit -> uint8 ) =
     let word = ( ( state >>> ( ( state >>> 6 |> int ) + 2 ) ) ^^^ state ) * 217uy |> truncateForJs8
     ( word >>> 6 ) ^^^ word
 
-  let nextBytesCount , nextBytesFn = 1 , fun () -> [| nextFn() |]
+  let nextBytes ( bytes : byte array ) startIndex length =
+    for i in startIndex .. startIndex + length - 1 do
+      bytes.[ i ] <- nextFn ()
 
   /// PCG 8-bit pseudorandom number generator
   private new ( variant : Normal , seed : uint16 , streamOpt : uint16 option ) =
@@ -121,29 +124,49 @@ type Pcg8 private ( name : string , nextFn : unit -> uint8 ) =
   /// PCG 8-bit pseudorandom number generator
   new () = Pcg8( Normal.Default , seed16 () , None )
 
-  /// Sets all bytes in the specified array to random bytes. Consumes multiple values from the generator if necessary to fill array.
-  member this.NextBytes( bytes ) = Zanaptak.PcgRandom.Utils.nextBytes nextBytesFn nextBytesCount bytes
+  override this.ToString() = name
+
   /// Returns a random 8-bit unsigned integer greater than or equal to the specified minimum and less than the specified maximum.
   member this.Next( minInclusive : uint8 , maxExclusive : uint8 ) =
-    if minInclusive > maxExclusive then
-      raise ( System.ArgumentException( "minInclusive cannot be greater than maxExclusive" ) )
-    elif minInclusive = maxExclusive then minInclusive
-    else
+    if maxExclusive > minInclusive then
       let bound = maxExclusive - minInclusive
       let threshold = ( uint8 -( int8 bound ) ) % bound
       let rec loop () =
         let r = nextFn ()
         if r >= threshold then r % bound + minInclusive else loop ()
       loop ()
+    elif minInclusive = maxExclusive then minInclusive
+    else raise ( ArgumentException( "minInclusive cannot be greater than maxExclusive" ) )
+
   /// Returns a random 8-bit unsigned integer less than the specified maximum.
   member this.Next( maxExclusive : uint8 ) =
-    if maxExclusive = 0uy then 0uy
-    else
+    if maxExclusive > 0uy then
       let threshold = ( uint8 -( int8 maxExclusive ) ) % maxExclusive
       let rec loop () =
         let r = nextFn ()
         if r >= threshold then r % maxExclusive else loop ()
       loop ()
+    else 0uy
+
   /// Returns a random 8-bit unsigned integer.
   member this.Next() = nextFn ()
-  override this.ToString() = name
+
+  /// Sets all bytes in the specified array to random bytes. Consumes multiple values from the generator if necessary.
+  member this.NextBytes( bytes : byte array ) =
+    if ( not ( isNull bytes ) ) && bytes.Length > 0 then
+      nextBytes bytes 0 bytes.Length
+    elif isNull bytes then
+      raise ( ArgumentException( "byte array cannot be null" ) )
+    else ()
+
+  /// Sets the specified bytes in the specified array to random bytes. Consumes multiple values from the generator if necessary.
+  member this.NextBytes( bytes : byte array , startIndex , length ) =
+    if ( not ( isNull bytes ) ) && startIndex >= 0 && length > 0 && ( startIndex + length ) <= bytes.Length then
+      nextBytes bytes startIndex length
+    elif isNull bytes then
+      raise ( ArgumentException( "byte array cannot be null" ) )
+    elif startIndex < 0 || startIndex >= bytes.Length then
+      raise ( ArgumentOutOfRangeException( "start index must be within array bounds" ) )
+    elif ( startIndex + length ) > bytes.Length then
+      raise ( ArgumentException( "length parameter must not exceed number of elements from start index to end of array" ) )
+    else ()

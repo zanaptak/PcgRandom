@@ -39,17 +39,58 @@ let inline rotateRight32 ( value : uint32 ) ( count : int ) =
 let inline rotateRight64 ( value : uint64 ) ( count : int ) =
   ( value >>> count ) ||| ( value <<< ( 64 - count ) )
 
-let seed8 () = System.Random().Next() |> uint8
-let seed16 () = System.Random().Next() |> uint16
+#if FABLE_COMPILER
+
+open Fable.Core
+open Fable.Core.JsInterop
+
+#if ZANAPTAK_NODEJS_CRYPTO
+
+let crypto : obj = importDefault "crypto"
+let getSeedBytes =
+  fun ( bytes : byte array ) -> crypto?randomFillSync( bytes )
+
+#else
+
+let [<Global>] window: obj = jsNative
+[<Emit("typeof $0 !== 'undefined'")>]
+let isNotTypeofUndefined (x: 'a) : bool = jsNative
+
+let getSeedBytes =
+  if isNotTypeofUndefined window && window?crypto && window?crypto?getRandomValues then
+    fun ( bytes : byte array ) -> window?crypto?getRandomValues( bytes )
+  elif isNotTypeofUndefined window && window?msCrypto && window?msCrypto?getRandomValues then
+    fun ( bytes : byte array ) -> window?msCrypto?getRandomValues( bytes )
+  else
+    let systemRng = System.Random()
+    fun ( bytes : byte array ) -> systemRng.NextBytes( bytes )
+
+#endif
+
+#else
+
+let getSeedBytes =
+  let cryptoRng = System.Security.Cryptography.RandomNumberGenerator.Create()
+  fun ( bytes : byte array ) -> cryptoRng.GetBytes( bytes )
+
+#endif
+
+let seed8 () : uint8 =
+  let bytes = Array.create 1 0uy
+  getSeedBytes bytes
+  bytes.[ 0 ]
+let seed16 () =
+  let bytes = Array.create 2 0uy
+  getSeedBytes bytes
+  BitConverter.ToUInt16( bytes , 0 )
 let seed32 () =
-  let seedGen = System.Random()
-  let hi , lo = seedGen.Next() |> uint32 , seedGen.Next() |> uint32
-  hi <<< 16 ||| ( lo &&& 0xffffu )
+  let bytes = Array.create 4 0uy
+  getSeedBytes bytes
+  BitConverter.ToUInt32( bytes , 0 )
 let seed64 () =
-  let seedGen = System.Random()
-  // use only 31 bits of each part since high bit is always 0
-  let seedParts = Array.init 3 ( fun _ -> seedGen.Next() |> uint64 )
-  seedParts |> Array.reduce ( fun a b -> a <<< 31 ||| ( b &&& 0x7fffffffUL ) )
+  let bytes = Array.create 8 0uy
+  getSeedBytes bytes
+  BitConverter.ToUInt64( bytes , 0 )
 
 let [< Literal >] PCG_DEFAULT_MULTIPLIER_8 = 141uy
 let [< Literal >] PCG_DEFAULT_INCREMENT_8 = 77uy
@@ -74,17 +115,3 @@ let inline pcg_setseq_64_step_r ( increment : uint64 ) ( state : uint64 ) =
   state * PCG_DEFAULT_MULTIPLIER_64 + increment
 let inline pcg_mcg_64_step_r ( state : uint64 ) =
   state * PCG_DEFAULT_MULTIPLIER_64
-
-let nextBytes ( nextBytesFn : unit -> byte array ) ( nextBytesCount : int ) ( bytes : byte array ) =
-  if bytes = null then raise ( ArgumentException( "byte array cannot be null" ) )
-  if bytes.Length = 0 then ()
-  else
-    let mutable writeIndex = 0
-    while writeIndex < bytes.Length do
-      let bytesToWrite = bytes.Length - writeIndex |> min 65536
-      let randValueCount = float bytesToWrite / float nextBytesCount |> ceil |> int
-      let randArray =
-        Array.init randValueCount ( fun _ -> nextBytesFn () )
-        |> Array.concat
-      Array.Copy( randArray , 0 , bytes , writeIndex , bytesToWrite )
-      writeIndex <- writeIndex + bytesToWrite
