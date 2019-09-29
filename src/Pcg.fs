@@ -4,7 +4,9 @@ open Utils
 open System
 
 /// PCG-backed pseudorandom number generator compatible with System.Random.
-type Pcg( seed : int ) =
+type Pcg private ( dummy : unit , seed : int ) =
+  // Private primary constructor since it doesn't support xml doc.
+
   #if ! FABLE_COMPILER
   inherit Random()
   #endif
@@ -44,6 +46,8 @@ type Pcg( seed : int ) =
       for j in 0 .. min 3 ( endIndex - i ) do
         bytes.[ i + j ] <- randVal >>> ( j * 8 ) |> byte
 
+  /// PCG-backed pseudorandom number generator compatible with System.Random.
+  new ( seed : int ) = Pcg( () , seed )
   /// PCG-backed pseudorandom number generator compatible with System.Random.
   new() = Pcg( seed32 () |> int )
 

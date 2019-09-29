@@ -12,7 +12,8 @@ param (
   $LocalPackageDir = ( property LocalPackageDir 'C:\code\LocalPackages' )
 )
 
-$basePackageName = 'Zanaptak.PcgRandom'
+$baseProjectName = "PcgRandom"
+$basePackageName = "Zanaptak.$baseProjectName"
 
 task . Build
 
@@ -22,54 +23,6 @@ task Clean {
 
 task Build {
   exec { dotnet build .\src -c Release }
-}
-
-task Pack Clean, Build, {
-  exec { dotnet pack .\src -c Release }
-}
-
-task PackInternal Clean, Build, GetVersion, {
-  $yearStart = Get-Date -Year ( ( Get-Date ).Year ) -Month 1 -Day 1 -Hour 0 -Minute 0 -Second 0 -Millisecond 0
-  $now = Get-Date
-  $buildSuffix = [ int ] ( ( $now - $yearStart ).TotalSeconds )
-  $internalVersion = "$Version.$buildSuffix"
-  exec { dotnet pack .\src -c Release -p:PackageVersion=$internalVersion }
-  $filename = "$basePackageName.$internalVersion.nupkg"
-  Copy-Item .\src\bin\Release\$filename $LocalPackageDir
-  Write-Build Green "Copied $filename to $LocalPackageDir"
-}
-
-task IncrementMinor GetVersion, {
-  if ( $Version -match "^(\d+)\.(\d+)\." ) {
-    $major = $Matches[ 1 ]
-    Write-Host "major $major"
-    $minor = $Matches[ 2 ]
-    Write-Host "minor $minor"
-    $newMinor = ( [ int ] $minor ) + 1
-    $newVersion = "$major.$newMinor.0"
-
-    $xml = New-Object System.Xml.XmlDocument
-    $xml.PreserveWhitespace = $true
-    $xml.Load( "$BuildRoot\src\PcgRandom.fsproj" )
-
-    $node = $xml.SelectSingleNode( '/Project/PropertyGroup/Version' )
-    $node.InnerText = $newVersion
-
-    $settings = New-Object System.Xml.XmlWriterSettings
-    $settings.OmitXmlDeclaration = $true
-    $settings.Encoding = New-Object System.Text.UTF8Encoding( $true )
-
-    $writer = [ System.Xml.XmlWriter ]::Create( "$BuildRoot\src\PcgRandom.fsproj" , $settings )
-    try {
-      $xml.Save( $writer )
-    } finally {
-      $writer.Dispose()
-    }
-    Write-Build Green "Updated version to $newVersion"
-  }
-  else {
-    throw "invalid version: $Version"
-  }
 }
 
 task TestJs {
@@ -91,8 +44,81 @@ task Benchmark Clean, Build, {
   exec { dotnet run -c Release }
 }
 
+task Pack Clean, Build, {
+  exec { dotnet pack .\src -c Release }
+}
+
+task PackInternal Clean, Build, GetVersion, {
+  $yearStart = Get-Date -Year ( ( Get-Date ).Year ) -Month 1 -Day 1 -Hour 0 -Minute 0 -Second 0 -Millisecond 0
+  $now = Get-Date
+  $buildSuffix = [ int ] ( ( $now - $yearStart ).TotalSeconds )
+  $internalVersion = "$Version.$buildSuffix"
+  exec { dotnet pack .\src -c Release -p:PackageVersion=$internalVersion }
+  $filename = "$basePackageName.$internalVersion.nupkg"
+  Copy-Item .\src\bin\Release\$filename $LocalPackageDir
+  Write-Build Green "Copied $filename to $LocalPackageDir"
+}
+
+function UpdateProjectFile(
+  [ string ] $Filename ,
+  [ string ] $XPath ,
+  [ string ] $Value
+) {
+
+  $xml = New-Object System.Xml.XmlDocument
+  $xml.PreserveWhitespace = $true
+  $xml.Load( $Filename )
+
+  $node = $xml.SelectSingleNode( $XPath )
+  if ( -not ( $node ) ) { throw "xpath not found" }
+  $node.InnerText = $Value
+
+  $settings = New-Object System.Xml.XmlWriterSettings
+  $settings.OmitXmlDeclaration = $true
+  $settings.Encoding = New-Object System.Text.UTF8Encoding( $true )
+
+  $writer = [ System.Xml.XmlWriter ]::Create( $Filename , $settings )
+  try {
+    $xml.Save( $writer )
+  } finally {
+    $writer.Dispose()
+  }
+}
+
+task IncrementMinor GetVersion, {
+  if ( $Version -match "^(\d+)\.(\d+)\.(\d+)$" ) {
+    $projectFile = "$BuildRoot\src\$baseProjectName.fsproj"
+    $major = $Matches[ 1 ]
+    $minor = $Matches[ 2 ]
+    $patch = $Matches[ 3 ]
+    $newMinor = ( [ int ] $minor ) + 1
+    $newVersion = "$major.$newMinor.0"
+    UpdateProjectFile $projectFile '/Project/PropertyGroup/Version' $newVersion
+    Write-Build Green "Updated version to $newVersion"
+  }
+  else {
+    throw "invalid version: $Version"
+  }
+}
+
+task IncrementPatch GetVersion, {
+  if ( $Version -match "^(\d+)\.(\d+)\.(\d+)$" ) {
+    $projectFile = "$BuildRoot\src\$baseProjectName.fsproj"
+    $major = $Matches[ 1 ]
+    $minor = $Matches[ 2 ]
+    $patch = $Matches[ 3 ]
+    $newPatch = ( [ int ] $patch ) + 1
+    $newVersion = "$major.$minor.$newPatch"
+    UpdateProjectFile $projectFile '/Project/PropertyGroup/Version' $newVersion
+    Write-Build Green "Updated version to $newVersion"
+  }
+  else {
+    throw "invalid version: $Version"
+  }
+}
+
 task GetVersion {
-  $script:Version = Select-Xml -Path .\src\PcgRandom.fsproj -XPath /Project/PropertyGroup/Version | % { $_.Node.InnerXml.Trim() }
+  $script:Version = Select-Xml -Path ".\src\$baseProjectName.fsproj" -XPath /Project/PropertyGroup/Version | % { $_.Node.InnerXml.Trim() }
 }
 
 task UploadNuGet EnsureCommitted, GetVersion, {

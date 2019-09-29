@@ -5,6 +5,12 @@ VisualStudioVersion = 16.0.29209.62
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "PcgRandom", "PcgRandom.fsproj", "{D205156D-7FDB-43AD-9158-3DC06824FE93}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{6734C90D-5B0C-448D-BD3B-8E9427C59762}"
+	ProjectSection(SolutionItems) = preProject
+		..\invoke.build.ps1 = ..\invoke.build.ps1
+		..\README.md = ..\README.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

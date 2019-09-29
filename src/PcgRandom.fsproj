@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net452</TargetFrameworks>
     <DisableImplicitSystemValueTupleReference>true</DisableImplicitSystemValueTupleReference>
-    <Version>0.2.0</Version>
+    <Version>0.2.1</Version>
     <Authors>zanaptak</Authors>
     <AssemblyName>Zanaptak.PcgRandom</AssemblyName>
     <Product>Zanaptak.PcgRandom</Product>
@@ -15,6 +15,10 @@
     <PackageTags>pcg;random;rng;prng;.net;fable</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Description>A PCG pseudorandom number generator implementation for .NET and Fable. PCG (http://www.pcg-random.org/) is a family of simple fast space-efficient statistically good algorithms for random number generation.</Description>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
