@@ -191,7 +191,6 @@ let thresholdTests =
       let theyMatch = Seq.init (Byte.MaxValue - 1uy |> int) (fun i -> 1uy + byte i) |> Seq.forall (fun n -> threshold8 n = thresholdNaive8 n)
       Expect.isTrue theyMatch ""
 
-
     testCase "threshold16 vs naive" <| fun () ->
       let theyMatch = Seq.init (UInt16.MaxValue - 1us |> int) (fun i -> 1us + uint16 i) |> Seq.forall (fun n -> threshold16 n = thresholdNaive16 n)
       Expect.isTrue theyMatch ""
@@ -747,9 +746,112 @@ let pcg128InvertibleTests =
       Expect.notEqual r1 r2 ""
   ]
 
+let constructorOverloads =
+  testList "Constructor overloads" [
+    testCase "Pcg8 constructor overloads" <| fun () ->
+      let bare = Pcg8()
+      let seed = Pcg8( 1us )
+      let seedStream = Pcg8( 1us , 1us )
+      let fast = Pcg8( Pcg8Variants.Fast.Default )
+      let fastSeed = Pcg8( Pcg8Variants.Fast.Default , 1us )
+      let invertible = Pcg8( Pcg8Variants.Invertible.Default )
+      let invertibleSeed = Pcg8( Pcg8Variants.Invertible.Default , 1uy )
+      let invertibleStream = Pcg8( Pcg8Variants.Invertible.Default , 1uy , 1uy )
+      let normal = Pcg8( Pcg8Variants.Normal.Default )
+      let normalSeed = Pcg8( Pcg8Variants.Normal.Default , 1us )
+      let normalSeedStream = Pcg8( Pcg8Variants.Normal.Default , 1us , 1us )
+      Expect.isTrue ( bare.Next() >= Byte.MinValue ) ""
+      Expect.isTrue ( seed.Next() >= Byte.MinValue ) ""
+      Expect.isTrue ( seedStream.Next() >= Byte.MinValue ) ""
+      Expect.isTrue ( fast.Next() >= Byte.MinValue ) ""
+      Expect.isTrue ( fastSeed.Next() >= Byte.MinValue ) ""
+      Expect.isTrue ( invertible.Next() >= Byte.MinValue ) ""
+      Expect.isTrue ( invertibleSeed.Next() >= Byte.MinValue ) ""
+      Expect.isTrue ( invertibleStream.Next() >= Byte.MinValue ) ""
+      Expect.isTrue ( normal.Next() >= Byte.MinValue ) ""
+      Expect.isTrue ( normalSeed.Next() >= Byte.MinValue ) ""
+      Expect.isTrue ( normalSeedStream.Next() >= Byte.MinValue ) ""
+    testCase "Pcg16 constructor overloads" <| fun () ->
+      let bare = Pcg16()
+      let seed = Pcg16( 1u )
+      let seedStream = Pcg16( 1u , 1u )
+      let fast = Pcg16( Pcg16Variants.Fast.Default )
+      let fastSeed = Pcg16( Pcg16Variants.Fast.Default , 1u )
+      let invertible = Pcg16( Pcg16Variants.Invertible.Default )
+      let invertibleSeed = Pcg16( Pcg16Variants.Invertible.Default , 1us )
+      let invertibleStream = Pcg16( Pcg16Variants.Invertible.Default , 1us , 1us )
+      let normal = Pcg16( Pcg16Variants.Normal.Default )
+      let normalSeed = Pcg16( Pcg16Variants.Normal.Default , 1u )
+      let normalSeedStream = Pcg16( Pcg16Variants.Normal.Default , 1u , 1u )
+      Expect.isTrue ( bare.Next() >= UInt16.MinValue ) ""
+      Expect.isTrue ( seed.Next() >= UInt16.MinValue ) ""
+      Expect.isTrue ( seedStream.Next() >= UInt16.MinValue ) ""
+      Expect.isTrue ( fast.Next() >= UInt16.MinValue ) ""
+      Expect.isTrue ( fastSeed.Next() >= UInt16.MinValue ) ""
+      Expect.isTrue ( invertible.Next() >= UInt16.MinValue ) ""
+      Expect.isTrue ( invertibleSeed.Next() >= UInt16.MinValue ) ""
+      Expect.isTrue ( invertibleStream.Next() >= UInt16.MinValue ) ""
+      Expect.isTrue ( normal.Next() >= UInt16.MinValue ) ""
+      Expect.isTrue ( normalSeed.Next() >= UInt16.MinValue ) ""
+      Expect.isTrue ( normalSeedStream.Next() >= UInt16.MinValue ) ""
+    testCase "Pcg32 constructor overloads" <| fun () ->
+      let bare = Pcg32()
+      let seed = Pcg32( 1UL )
+      let seedStream = Pcg32( 1UL , 1UL )
+      let fast = Pcg32( Pcg32Variants.Fast.Default )
+      let fastSeed = Pcg32( Pcg32Variants.Fast.Default , 1UL )
+      let invertible = Pcg32( Pcg32Variants.Invertible.Default )
+      let invertibleSeed = Pcg32( Pcg32Variants.Invertible.Default , 1u )
+      let invertibleStream = Pcg32( Pcg32Variants.Invertible.Default , 1u , 1u )
+      let normal = Pcg32( Pcg32Variants.Normal.Default )
+      let normalSeed = Pcg32( Pcg32Variants.Normal.Default , 1UL )
+      let normalSeedStream = Pcg32( Pcg32Variants.Normal.Default , 1UL , 1UL )
+      Expect.isTrue ( bare.Next() >= UInt32.MinValue ) ""
+      Expect.isTrue ( seed.Next() >= UInt32.MinValue ) ""
+      Expect.isTrue ( seedStream.Next() >= UInt32.MinValue ) ""
+      Expect.isTrue ( fast.Next() >= UInt32.MinValue ) ""
+      Expect.isTrue ( fastSeed.Next() >= UInt32.MinValue ) ""
+      Expect.isTrue ( invertible.Next() >= UInt32.MinValue ) ""
+      Expect.isTrue ( invertibleSeed.Next() >= UInt32.MinValue ) ""
+      Expect.isTrue ( invertibleStream.Next() >= UInt32.MinValue ) ""
+      Expect.isTrue ( normal.Next() >= UInt32.MinValue ) ""
+      Expect.isTrue ( normalSeed.Next() >= UInt32.MinValue ) ""
+      Expect.isTrue ( normalSeedStream.Next() >= UInt32.MinValue ) ""
+    testCase "Pcg64 constructor overloads" <| fun () ->
+      let bare = Pcg64()
+      let seed = Pcg64( 1I )
+      let seedStream = Pcg64( 1I , 1I )
+      let fast = Pcg64( Pcg64Variants.Fast.Default )
+      let fastSeed = Pcg64( Pcg64Variants.Fast.Default , 1I )
+      let invertible = Pcg64( Pcg64Variants.Invertible.Default )
+      let invertibleSeed = Pcg64( Pcg64Variants.Invertible.Default , 1UL )
+      let invertibleStream = Pcg64( Pcg64Variants.Invertible.Default , 1UL , 1UL )
+      let normal = Pcg64( Pcg64Variants.Normal.Default )
+      let normalSeed = Pcg64( Pcg64Variants.Normal.Default , 1I )
+      let normalSeedStream = Pcg64( Pcg64Variants.Normal.Default , 1I , 1I )
+      Expect.isTrue ( bare.Next() >= UInt64.MinValue ) ""
+      Expect.isTrue ( seed.Next() >= UInt64.MinValue ) ""
+      Expect.isTrue ( seedStream.Next() >= UInt64.MinValue ) ""
+      Expect.isTrue ( fast.Next() >= UInt64.MinValue ) ""
+      Expect.isTrue ( fastSeed.Next() >= UInt64.MinValue ) ""
+      Expect.isTrue ( invertible.Next() >= UInt64.MinValue ) ""
+      Expect.isTrue ( invertibleSeed.Next() >= UInt64.MinValue ) ""
+      Expect.isTrue ( invertibleStream.Next() >= UInt64.MinValue ) ""
+      Expect.isTrue ( normal.Next() >= UInt64.MinValue ) ""
+      Expect.isTrue ( normalSeed.Next() >= UInt64.MinValue ) ""
+      Expect.isTrue ( normalSeedStream.Next() >= UInt64.MinValue ) ""
+    testCase "Pcg128 constructor overloads" <| fun () ->
+      let invertible = Pcg128( Pcg128Variants.Invertible.Default )
+      let invertibleSeed = Pcg128( Pcg128Variants.Invertible.Default , 0I )
+      let invertibleStream = Pcg128( Pcg128Variants.Invertible.Default , 0I , 0I )
+      Expect.isTrue ( invertible.Next() >= 0I ) ""
+      Expect.isTrue ( invertibleSeed.Next() >= 0I ) ""
+      Expect.isTrue ( invertibleStream.Next() >= 0I ) ""
+  ]
+
 let allTests =
   testList "All" [
-    //thresholdTests
+    thresholdTests
     maxSeedValuesTests
     customSeedTests
     referenceSeedTests
@@ -759,4 +861,5 @@ let allTests =
     pcg32Tests
     pcg64Tests
     pcg128InvertibleTests
+    constructorOverloads
   ]
