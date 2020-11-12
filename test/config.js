@@ -2,7 +2,7 @@ module.exports = {
   entry: "PcgRandom.Tests.fsproj",
   outDir: "bld",
   babel: {
-    presets: [["@babel/preset-env", { modules: "commonjs" }]],
+    plugins: ["@babel/plugin-transform-modules-commonjs"],
     sourceMaps: false,
   },
   fable: {
