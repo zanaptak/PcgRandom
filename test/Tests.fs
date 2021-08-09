@@ -542,7 +542,13 @@ let pcgTests =
         testCase "Next(Int32.MaxValue) same as Next()" <| fun () ->
             Expect.equal ( Pcg( 12345 ).Next( Int32.MaxValue ) ) 1411482639 ""
         testCase "NextDouble()" <| fun () ->
-            Expect.equal ( Pcg( 12345 ).NextDouble() ) 0.32863641142114913 ""
+            let p = Pcg( 12345 )
+            let expected = [| 0.7369538311214736; 0.5664858845487458; 0.8797812159514111 |]
+            Expect.equal ( Array.init 3 ( fun _ -> p.NextDouble() ) ) expected ""
+        testCase "NextBoolean()" <| fun () ->
+            let p = Pcg( 12345 )
+            let expected = [| false; true; true; true; false; true; true; true; false; true |]
+            Expect.equal ( Array.init 10 ( fun _ -> p.NextBoolean() ) ) expected ""
         testCase "NextBytes()" <| fun () ->
             let bytes : byte array = Array.zeroCreate 5
             Pcg( 12345 ).NextBytes( bytes )
@@ -593,6 +599,14 @@ let pcg8Tests =
     testList "Pcg8 methods" [
         testCase "Next()" <| fun () ->
             Expect.equal ( Pcg8( 1234us ).Next() ) 130uy ""
+        testCase "NextDouble()" <| fun () ->
+            let p8 = Pcg8( 1234us )
+            let expected = [| 0.3604367233329828; 0.8716159536826888; 0.5166071758833628 |]
+            Expect.equal ( Array.init 3 ( fun _ -> p8.NextDouble() ) ) expected ""
+        testCase "NextBoolean()" <| fun () ->
+            let p8 = Pcg8( 1234us )
+            let expected = [| true; false; true; true; true; false; false; false; false; true |]
+            Expect.equal ( Array.init 10 ( fun _ -> p8.NextBoolean() ) ) expected ""
         testCase "NextBytes()" <| fun () ->
             let bytes : byte array = Array.zeroCreate 5
             Pcg8( 1234us ).NextBytes( bytes )
@@ -623,6 +637,14 @@ let pcg16Tests =
     testList "Pcg16 methods" [
         testCase "Next()" <| fun () ->
             Expect.equal ( Pcg16( 1234567u ).Next() ) 53068us ""
+        testCase "NextDouble()" <| fun () ->
+            let p16 = Pcg16( 1234567u )
+            let expected = [| 0.7031997838624192; 0.47337870612530264; 0.5676679904821124 |]
+            Expect.equal ( Array.init 3 ( fun _ -> p16.NextDouble() ) ) expected ""
+        testCase "NextBoolean()" <| fun () ->
+            let p16 = Pcg16( 1234567u )
+            let expected = [| true; false; true; true; false; false; false; false; false; false |]
+            Expect.equal ( Array.init 10 ( fun _ -> p16.NextBoolean() ) ) expected ""
         testCase "NextBytes()" <| fun () ->
             let bytes : byte array = Array.zeroCreate 5
             Pcg16( 1234567u ).NextBytes( bytes )
@@ -653,6 +675,14 @@ let pcg32Tests =
     testList "Pcg32 methods" [
         testCase "Next()" <| fun () ->
             Expect.equal ( Pcg32( 1234567890987UL ).Next() ) 108360520u ""
+        testCase "NextDouble()" <| fun () ->
+            let p32 = Pcg32( 1234567890987UL )
+            let expected = [| 0.5874227536900969; 0.5549752149515084; 0.04390979360774905 |]
+            Expect.equal ( Array.init 3 ( fun _ -> p32.NextDouble() ) ) expected ""
+        testCase "NextBoolean()" <| fun () ->
+            let p32 = Pcg32( 1234567890987UL )
+            let expected = [| false; true; false; true; true; false; true; false; true; true |]
+            Expect.equal ( Array.init 10 ( fun _ -> p32.NextBoolean() ) ) expected ""
         testCase "NextBytes()" <| fun () ->
             let bytes : byte array = Array.zeroCreate 5
             Pcg32( 1234567890987UL ).NextBytes( bytes )
@@ -691,6 +721,14 @@ let pcg64Tests =
     testList "Pcg64 methods" [
         testCase "Next()" <| fun () ->
             Expect.equal ( Pcg64( 1234567890987654321012345I ).Next() ) 4138087873088397747UL ""
+        testCase "NextDouble()" <| fun () ->
+            let p64 = Pcg64( 1234567890987654321012345I )
+            let expected = [| 0.22432619309691804; 0.6544305475643339; 0.24466342543039787 |]
+            Expect.equal ( Array.init 3 ( fun _ -> p64.NextDouble() ) ) expected ""
+        testCase "NextBoolean()" <| fun () ->
+            let p64 = Pcg64( 1234567890987654321012345I )
+            let expected = [| false; true; false; false; false; true; false; true; false; true |]
+            Expect.equal ( Array.init 10 ( fun _ -> p64.NextBoolean() ) ) expected ""
         testCase "NextBytes()" <| fun () ->
             let bytes : byte array = Array.zeroCreate 10
             Pcg64( 1234567890987654321012345I ).NextBytes( bytes )
@@ -721,6 +759,14 @@ let pcg128InvertibleTests =
     testList "Pcg128 Invertible methods" [
         testCase "Next()" <| fun () ->
             Expect.equal ( Pcg128( Pcg128Variants.Invertible.Default , 1234567890987654321012345I ).Next() ) 201198658666555169016505132273858322867I ""
+        testCase "NextDouble()" <| fun () ->
+            let p128 = Pcg128( Pcg128Variants.Invertible.Default , 1234567890987654321012345I )
+            let expected = [| 0.5912697166388932; 0.3382330164560101; 0.9968533844755237 |]
+            Expect.equal ( Array.init 3 ( fun _ -> p128.NextDouble() ) ) expected ""
+        testCase "NextBoolean()" <| fun () ->
+            let p128 = Pcg128( Pcg128Variants.Invertible.Default , 1234567890987654321012345I )
+            let expected = [| true; false; true; false; false; false; false; true; true; false |]
+            Expect.equal ( Array.init 10 ( fun _ -> p128.NextBoolean() ) ) expected ""
         testCase "NextBytes()" <| fun () ->
             let bytes : byte array = Array.zeroCreate 18
             Pcg128( Pcg128Variants.Invertible.Default , 1234567890987654321012345I ).NextBytes( bytes )

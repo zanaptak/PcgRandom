@@ -3,6 +3,7 @@ namespace Zanaptak.PcgRandom.Pcg128Variants
     type Invertible =
         | RXS_M_XS
         | XSL_RR_RR
+        /// Default: XSL_RR_RR
         | Default
 
 namespace Zanaptak.PcgRandom
@@ -27,6 +28,8 @@ type Pcg128 internal ( name : string , nextFn : unit -> bigint ) =
         let newhigh = rotateRight64 high ( newlow &&& 63UL |> int )
         ( bigint newhigh ) <<< 64 ||| bigint newlow
 
+    let Int128Max = 170141183460469231731687303715884105727I
+
     let nextBytes ( bytes : byte array ) startIndex length =
         let endIndex = startIndex + length - 1
         for i in startIndex .. 16 .. endIndex do
@@ -34,7 +37,6 @@ type Pcg128 internal ( name : string , nextFn : unit -> bigint ) =
             for j in 0 .. min 15 ( endIndex - i ) do
                 bytes.[ i + j ] <- ( randVal >>> ( j * 8 ) ) &&& 255I |> byte
 
-    /// PCG 128-bit pseudorandom number generator
     private new ( variant : Invertible , seed : bigint , streamOpt : bigint option ) =
         let increment =
             match streamOpt with
@@ -57,13 +59,14 @@ type Pcg128 internal ( name : string , nextFn : unit -> bigint ) =
                 outputFn state
         Pcg128( name , nextFn )
 
-    /// PCG 128-bit pseudorandom number generator
+    /// Specify Invertible variant with seed and stream.
     new ( variant : Invertible , seed : bigint , stream : bigint ) = Pcg128( variant , seed , Some stream )
-    /// PCG 128-bit pseudorandom number generator
+    /// Specify Invertible variant with seed.
     new ( variant : Invertible , seed : bigint ) = Pcg128( variant , seed , None )
-    /// PCG 128-bit pseudorandom number generator
+    /// Specify Invertible variant.
     new ( variant : Invertible ) = Pcg128( variant , seed128 () , None )
 
+    /// Returns name of PCG algorithm for this instance.
     override this.ToString() = name
 
     /// Returns a random 128-bit unsigned integer greater than or equal to the specified minimum and less than the specified maximum.
@@ -113,3 +116,19 @@ type Pcg128 internal ( name : string , nextFn : unit -> bigint ) =
             raise ( ArgumentException( "length parameter must not exceed number of elements from start index to end of array" ) )
         else ()
 
+    /// Returns a random boolean.
+    member this.NextBoolean() = nextFn() > Int128Max
+
+    // http://prng.di.unimi.it/
+    // A standard double (64-bit) floating-point number in IEEE floating point format has 52 bits of significand, plus an implicit bit at the left of the significand.
+    // Thus, the representation can actually store numbers with 53 significant binary digits.
+    // Because of this fact, in C99 a 64-bit unsigned integer x should be converted to a 64-bit double using the expression
+    //    #include <stdint.h>
+    //    (x >> 11) * (1. / (UINT64_C(1) << 53))
+    // This conversion guarantees that all dyadic rationals of the form k / 2−53 will be equally likely.
+    // Note that this conversion prefers the high bits of x (usually, a good idea), but you can alternatively use the lowest bits.
+
+    /// Returns a random double greater than or equal to 0.0 and less than 1.0 (using 53 random bits).
+    member this.NextDouble() =
+        float( nextFn() >>> 75 ) * 0.000000000000000111022302462515654042363166809082031250000000
+        // Result with 53 1-bits is: 0.999999999999999888977697537484345957636833190917968750000000

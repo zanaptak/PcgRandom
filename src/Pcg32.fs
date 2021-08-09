@@ -2,6 +2,7 @@ namespace Zanaptak.PcgRandom.Pcg32Variants
     /// Variant with the same number of outbut bits as internal state bits. Easier to reverse-engineer internal state than other variants.
     type Invertible =
         | RXS_M_XS
+        /// Default: RXS_M_XS
         | Default
     /// Faster variant but with reduced statistical quality. Based on MCG generator type.
     type Fast =
@@ -9,6 +10,7 @@ namespace Zanaptak.PcgRandom.Pcg32Variants
         | XSH_RS
         | XSL_RR
         | RXS_M
+        /// Default: XSH_RR
         | Default
     /// General purpose variant balancing speed and statistical quality. Allows stream selection. Based on LCG generator type.
     type Normal =
@@ -16,6 +18,7 @@ namespace Zanaptak.PcgRandom.Pcg32Variants
         | XSH_RS
         | XSL_RR
         | RXS_M
+        /// Default: XSH_RR
         | Default
 
 namespace Zanaptak.PcgRandom
@@ -37,6 +40,8 @@ type Pcg32 internal ( name : string , nextFn : unit -> uint32 ) =
         let word = multiply32 ( ( state >>> ( ( state >>> 28 |> int ) + 4 ) ) ^^^ state ) 277803737u
         ( word >>> 22 ) ^^^ word
 
+    let [< Literal >] Int32Max = 2147483647u
+
     let nextBytes ( bytes : byte array ) startIndex length =
         let endIndex = startIndex + length - 1
         for i in startIndex .. 4 .. endIndex do
@@ -44,7 +49,6 @@ type Pcg32 internal ( name : string , nextFn : unit -> uint32 ) =
             for j in 0 .. min 3 ( endIndex - i ) do
                 bytes.[ i + j ] <- randVal >>> ( j * 8 ) |> byte
 
-    /// PCG 32-bit pseudorandom number generator
     private new ( variant : Normal , seed : uint64 , streamOpt : uint64 option ) =
         let increment =
             match streamOpt with
@@ -69,7 +73,6 @@ type Pcg32 internal ( name : string , nextFn : unit -> uint32 ) =
                 outputFn prevState
         Pcg32( name , nextFn )
 
-    /// PCG 32-bit pseudorandom number generator
     private new ( variant : Invertible , seed : uint32 , streamOpt : uint32 option ) =
         let increment =
             match streamOpt with
@@ -91,7 +94,7 @@ type Pcg32 internal ( name : string , nextFn : unit -> uint32 ) =
                 outputFn prevState
         Pcg32( name , nextFn )
 
-    /// PCG 32-bit pseudorandom number generator
+    /// Specify Fast variant with seed.
     new ( variant : Fast , seed : uint64 ) =
         let stepFn = pcg_mcg_64_step_r
         let outputFn , name =
@@ -109,30 +112,31 @@ type Pcg32 internal ( name : string , nextFn : unit -> uint32 ) =
                 outputFn prevState
         Pcg32( name , nextFn )
 
-    /// PCG 32-bit pseudorandom number generator
-    new ( variant : Normal , seed : uint64 , stream : uint64 ) = Pcg32( variant , seed , Some stream )
-    /// PCG 32-bit pseudorandom number generator
-    new ( variant : Normal , seed : uint64 ) = Pcg32( variant , seed , None )
-    /// PCG 32-bit pseudorandom number generator
-    new ( variant : Normal ) = Pcg32( variant , seed64 () , None )
-
-    /// PCG 32-bit pseudorandom number generator
-    new ( variant : Invertible , seed : uint32 , stream : uint32 ) = Pcg32( variant , seed , Some stream )
-    /// PCG 32-bit pseudorandom number generator
-    new ( variant : Invertible , seed : uint32 ) = Pcg32( variant , seed , None )
-    /// PCG 32-bit pseudorandom number generator
-    new ( variant : Invertible ) = Pcg32( variant , seed32 () , None )
-
-    /// PCG 32-bit pseudorandom number generator
+    /// Specify Fast variant.
     new ( variant : Fast ) = Pcg32( variant , seed64 () )
 
-    /// PCG 32-bit pseudorandom number generator
+    /// Specify Normal variant with seed and stream.
+    new ( variant : Normal , seed : uint64 , stream : uint64 ) = Pcg32( variant , seed , Some stream )
+    /// Specify Normal variant with seed.
+    new ( variant : Normal , seed : uint64 ) = Pcg32( variant , seed , None )
+    /// Specify Normal variant.
+    new ( variant : Normal ) = Pcg32( variant , seed64 () , None )
+
+    /// Specify Invertible variant with seed and stream.
+    new ( variant : Invertible , seed : uint32 , stream : uint32 ) = Pcg32( variant , seed , Some stream )
+    /// Specify Invertible variant with seed.
+    new ( variant : Invertible , seed : uint32 ) = Pcg32( variant , seed , None )
+    /// Specify Invertible variant.
+    new ( variant : Invertible ) = Pcg32( variant , seed32 () , None )
+
+    /// Use default variant (Normal.XSH_RR) with seed and stream.
     new ( seed : uint64 , stream : uint64 ) = Pcg32( Normal.Default , seed , Some stream )
-    /// PCG 32-bit pseudorandom number generator
+    /// Use default variant (Normal.XSH_RR) with seed.
     new ( seed : uint64 ) = Pcg32( Normal.Default , seed , None )
-    /// PCG 32-bit pseudorandom number generator
+    /// Use default variant (Normal.XSH_RR).
     new () = Pcg32( Normal.Default , seed64 () , None )
 
+    /// Returns name of PCG algorithm for this instance.
     override this.ToString() = name
 
     /// Returns a random 32-bit unsigned integer greater than or equal to the specified minimum and less than the specified maximum.
@@ -180,3 +184,20 @@ type Pcg32 internal ( name : string , nextFn : unit -> uint32 ) =
             raise ( ArgumentException( "length parameter must not exceed number of elements from start index to end of array" ) )
         else ()
 
+    /// Returns a random boolean.
+    member this.NextBoolean() = nextFn() > Int32Max
+
+    // http://prng.di.unimi.it/
+    // A standard double (64-bit) floating-point number in IEEE floating point format has 52 bits of significand, plus an implicit bit at the left of the significand.
+    // Thus, the representation can actually store numbers with 53 significant binary digits.
+    // Because of this fact, in C99 a 64-bit unsigned integer x should be converted to a 64-bit double using the expression
+    //    #include <stdint.h>
+    //    (x >> 11) * (1. / (UINT64_C(1) << 53))
+    // This conversion guarantees that all dyadic rationals of the form k / 2−53 will be equally likely.
+    // Note that this conversion prefers the high bits of x (usually, a good idea), but you can alternatively use the lowest bits.
+
+    /// Returns a random double greater than or equal to 0.0 and less than 1.0 (using 53 random bits). Consumes 2 values from the generator.
+    member this.NextDouble() =
+        let next64bits = uint64( nextFn() ) ||| ( uint64( nextFn() ) <<< 32 )
+        float( next64bits >>> 11 ) * 0.000000000000000111022302462515654042363166809082031250000000
+        // Result with 53 1-bits is: 0.999999999999999888977697537484345957636833190917968750000000

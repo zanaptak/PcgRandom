@@ -73,7 +73,7 @@ The overall categories of variants are:
 * `Fast`: Faster variant but with reduced statistical quality. Based on MCG generator type.
 * `Invertible`: Variant with the same number of outbut bits as internal state bits. Easier to reverse-engineer internal state than other variants.
 
-A `Pcg128` generator is available only as an Invertible variant; there are no Normal or Fast variants (which would require 256 bits of state) defined in the PCG source material.
+A `Pcg128` generator is available only as an Invertible variant; there are no Normal or Fast variants (which would require 256 bits of state) defined in the PCG source material. Since there is no Normal variant to serve as a default, there is intentionally no parameterless `Pcg128()` constructor; an Invertible variant must be specified.
 
 Please refer the [PCG website](http://www.pcg-random.org/) and [paper](http://www.pcg-random.org/paper.html) for further details.
 
@@ -101,7 +101,5 @@ See the [benchmark project](https://github.com/zanaptak/PcgRandom/tree/master/be
 - Internal calculations are based on the [PCG reference C implementation](https://github.com/imneme/pcg-c), which is available under the [MIT License](https://github.com/imneme/pcg-c/blob/master/LICENSE-MIT.txt).
 
 - Variants that use 128 bit arithmetic are much slower than other variants because they use [`System.Numerics.BigInteger`](https://docs.microsoft.com/en-us/dotnet/api/system.numerics.biginteger?view=netstandard-2.0) instead of primitive integer types. These can be identified by their constructors taking `BigInteger` seed values; they include the `Pcg64 Normal`, `Pcg64 Fast`, and `Pcg128 Invertible` variants.
-
-- The specific output size versions (`Pcg8`, `Pcg16`, etc.) intentionally exclude the `NextDouble()` method; proper unbiased double generation is not a goal of this library. The basic `Pcg` class does provide a trivial implementation (random UInt32 divided by max UInt32) to satisfy the System.Random interface.
 
 - These generators use internal mutable state and do not implement any thread safety mechanisms.
