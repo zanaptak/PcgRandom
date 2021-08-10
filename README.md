@@ -16,6 +16,7 @@ The basic option is `Pcg()`, which derives from System.Random and wraps an inter
 using Zanaptak.PcgRandom;
 var pcg = new Pcg();  // or with seed: Pcg(12345)
 var randomValue = pcg.Next();
+var diceRoll = pcg.Next(1, 7);
 ```
 
 ### F#
@@ -23,6 +24,7 @@ var randomValue = pcg.Next();
 open Zanaptak.PcgRandom
 let pcg = Pcg()  // or with seed: Pcg(12345)
 let randomValue = pcg.Next()
+let diceRoll = pcg.Next(1, 7)
 ```
 
 ## Output sizes
@@ -94,7 +96,7 @@ let pcg128 = Pcg128(Pcg128Variants.Invertible.XSL_RR_RR)
 
 ## Benchmarks
 
-See the [benchmark project](https://github.com/zanaptak/PcgRandom/tree/master/benchmark).
+See the [benchmark project](https://github.com/zanaptak/PcgRandom/tree/main/benchmark).
 
 ## Notes
 

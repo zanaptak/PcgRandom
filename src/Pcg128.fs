@@ -13,8 +13,11 @@ open Zanaptak.PcgRandom.Utils
 open Zanaptak.PcgRandom.BigintUtils
 open Zanaptak.PcgRandom.Pcg128Variants
 
-/// PCG 128-bit pseudorandom number generator
-type Pcg128 internal ( name : string , nextFn : unit -> bigint ) =
+/// PCG 128-bit pseudorandom number generator.
+type Pcg128
+    // Private primary ctor for public overloads to call, passing in appropriately configured step function.
+    private ( name : string , nextFn : unit -> bigint ) =
+
     static let MULTIPLIER_RXS_M_XS_128_128 = PCG_128BIT_CONSTANT 17766728186571221404UL 12605985483714917081UL
     static let pcg_output_rxs_m_xs_128_128 ( state : bigint ) =
         let word = ( ( state >>> ( ( state >>> 122 |> bigintToInt32 ) + 6 ) ) ^^^ state ) * MULTIPLIER_RXS_M_XS_128_128 |> truncate128

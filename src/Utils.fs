@@ -39,58 +39,7 @@ let inline rotateRight32 ( value : uint32 ) ( count : int ) =
 let inline rotateRight64 ( value : uint64 ) ( count : int ) =
     ( value >>> count ) ||| ( value <<< ( 64 - count ) )
 
-#if FABLE_COMPILER
-
-open Fable.Core
-open Fable.Core.JsInterop
-
-#if ZANAPTAK_NODEJS_CRYPTO
-
-let crypto : obj = importDefault "crypto"
-let getSeedBytes =
-    fun ( bytes : byte array ) -> crypto?randomFillSync( bytes )
-
-#else
-
-let [<Global>] window: obj = jsNative
-[<Emit("typeof $0 !== 'undefined'")>]
-let isNotTypeofUndefined (x: 'a) : bool = jsNative
-
-let getSeedBytes =
-    if isNotTypeofUndefined window && window?crypto && window?crypto?getRandomValues then
-        fun ( bytes : byte array ) -> window?crypto?getRandomValues( bytes )
-    elif isNotTypeofUndefined window && window?msCrypto && window?msCrypto?getRandomValues then
-        fun ( bytes : byte array ) -> window?msCrypto?getRandomValues( bytes )
-    else
-        let systemRng = System.Random()
-        fun ( bytes : byte array ) -> systemRng.NextBytes( bytes )
-
-#endif
-
-#else
-
-let getSeedBytes =
-    let cryptoRng = System.Security.Cryptography.RandomNumberGenerator.Create()
-    fun ( bytes : byte array ) -> cryptoRng.GetBytes( bytes )
-
-#endif
-
-let seed8 () : uint8 =
-    let bytes = Array.create 1 0uy
-    getSeedBytes bytes
-    bytes.[ 0 ]
-let seed16 () =
-    let bytes = Array.create 2 0uy
-    getSeedBytes bytes
-    BitConverter.ToUInt16( bytes , 0 )
-let seed32 () =
-    let bytes = Array.create 4 0uy
-    getSeedBytes bytes
-    BitConverter.ToUInt32( bytes , 0 )
-let seed64 () =
-    let bytes = Array.create 8 0uy
-    getSeedBytes bytes
-    BitConverter.ToUInt64( bytes , 0 )
+let seedRng = Zanaptak.BufferedCryptoRandom.BufferedCryptoRandom( allowBrowserFallback = true )
 
 let [< Literal >] PCG_DEFAULT_MULTIPLIER_8 = 141uy
 let [< Literal >] PCG_DEFAULT_INCREMENT_8 = 77uy

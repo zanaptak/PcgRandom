@@ -29,9 +29,4 @@ let inline pcg_setseq_128_step_r ( increment : bigint ) ( state : bigint ) =
 let inline pcg_mcg_128_step_r ( state : bigint ) =
     state * PCG_DEFAULT_MULTIPLIER_128 |> truncate128
 
-let seed128 () =
-    let bytes = Array.create 16 0uy
-    getSeedBytes bytes
-    let hi = BitConverter.ToUInt64( bytes , 0 )
-    let lo = BitConverter.ToUInt64( bytes , 8 )
-    PCG_128BIT_CONSTANT hi lo
+let seed128 () = PCG_128BIT_CONSTANT ( seedRng.NextUInt64() ) ( seedRng.NextUInt64() )

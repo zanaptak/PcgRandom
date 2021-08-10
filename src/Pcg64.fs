@@ -29,8 +29,11 @@ open Zanaptak.PcgRandom.Utils
 open Zanaptak.PcgRandom.BigintUtils
 open Zanaptak.PcgRandom.Pcg64Variants
 
-/// PCG 64-bit pseudorandom number generator
-type Pcg64 internal ( name : string , nextFn : unit -> uint64 ) =
+/// PCG 64-bit pseudorandom number generator.
+type Pcg64
+    // Private primary ctor for public overloads to call, passing in appropriately configured step function.
+    private ( name : string , nextFn : unit -> uint64 ) =
+
     static let pcg_output_xsh_rr_128_64 ( state : bigint ) =
         rotateRight64 ( ( ( state >>> 35 ) ^^^ state ) >>> 58 |> bigintToUInt64 ) ( state >>> 122 |> int )
     static let pcg_output_xsh_rs_128_64 ( state : bigint ) =
@@ -139,7 +142,7 @@ type Pcg64 internal ( name : string , nextFn : unit -> uint64 ) =
     /// Specify Invertible variant with seed.
     new ( variant : Invertible , seed : uint64 ) = Pcg64( variant , seed , None )
     /// Specify Invertible variant.
-    new ( variant : Invertible ) = Pcg64( variant , seed64 () , None )
+    new ( variant : Invertible ) = Pcg64( variant , seedRng.NextUInt64() , None )
 
     /// Use default variant (Normal.XSL_RR) with seed and stream.
     new ( seed : bigint , stream : bigint ) = Pcg64( Normal.Default , seed , Some stream )

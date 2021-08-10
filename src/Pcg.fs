@@ -4,13 +4,14 @@ open Utils
 open System
 
 /// PCG-backed pseudorandom number generator compatible with System.Random.
-type Pcg private ( dummy : unit , seed : int ) =
-    // Private primary constructor since it doesn't support xml doc.
+type Pcg
+    // Private primary constructor to hide uint64 ctor.
+    private ( seed : uint64 ) =
 
     #if ! FABLE_COMPILER
     inherit Random()
     #endif
-    let pcg32 = Pcg32( uint64 seed )
+    let pcg32 = Pcg32( seed )
 
     let [< Literal >] Int32Max = 2147483647u
     let [< Literal >] Int32Threshold = 2u
@@ -40,10 +41,10 @@ type Pcg private ( dummy : unit , seed : int ) =
             for j in 0 .. min 3 ( endIndex - i ) do
                 bytes.[ i + j ] <- randVal >>> ( j * 8 ) |> byte
 
-    /// PCG-backed pseudorandom number generator compatible with System.Random.
-    new ( seed : int ) = Pcg( () , seed )
-    /// PCG-backed pseudorandom number generator compatible with System.Random.
-    new() = Pcg( seed32 () |> int )
+    /// Create Pcg instance with specified seed.
+    new ( seed : int ) = Pcg( uint64 seed )
+    /// Create Pcg instance.
+    new() = Pcg( seedRng.NextUInt64() )
 
     // http://prng.di.unimi.it/
     // A standard double (64-bit) floating-point number in IEEE floating point format has 52 bits of significand, plus an implicit bit at the left of the significand.

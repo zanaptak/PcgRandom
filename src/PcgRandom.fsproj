@@ -12,7 +12,7 @@
     <RepositoryUrl>https://github.com/zanaptak/PcgRandom.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageProjectUrl>https://github.com/zanaptak/PcgRandom</PackageProjectUrl>
-    <PackageReleaseNotes>https://github.com/zanaptak/PcgRandom/releases</PackageReleaseNotes>
+    <PackageReleaseNotes>https://github.com/zanaptak/PcgRandom/blob/main/CHANGELOG.md#021-2019-09-29</PackageReleaseNotes>
     <PackageTags>pcg;random;rng;prng;.net;fable</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Description>A PCG pseudorandom number generator implementation for .NET and Fable. PCG (http://www.pcg-random.org/) is a family of simple fast space-efficient statistically good algorithms for random number generation.</Description>
@@ -40,6 +40,7 @@
   <ItemGroup>
     <PackageReference Update="FSharp.Core" Version="4.3.4" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
+    <PackageReference Include="Zanaptak.BufferedCryptoRandom" Version="0.3.1.1-0.internal.20210809.224125949" />
   </ItemGroup>
 
 </Project>

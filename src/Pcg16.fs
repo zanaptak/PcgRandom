@@ -24,8 +24,11 @@ open System
 open Zanaptak.PcgRandom.Utils
 open Zanaptak.PcgRandom.Pcg16Variants
 
-/// PCG 16-bit pseudorandom number generator
-type Pcg16 internal ( name : string , nextFn : unit -> uint16 ) =
+/// PCG 16-bit pseudorandom number generator.
+type Pcg16
+    // Private primary ctor for public overloads to call, passing in appropriately configured step function.
+    private ( name : string , nextFn : unit -> uint16 ) =
+
     static let pcg_output_xsh_rr_32_16 ( state : uint32 ) =
         rotateRight16 ( ( ( state >>> 10 ) ^^^ state ) >>> 12 |> uint16 ) ( state >>> 28 |> int )
     static let pcg_output_xsh_rs_32_16 ( state : uint32 ) =
@@ -107,28 +110,28 @@ type Pcg16 internal ( name : string , nextFn : unit -> uint16 ) =
         Pcg16( name , nextFn )
 
     /// Specify Fast variant.
-    new ( variant : Fast ) = Pcg16( variant , seed32 () )
+    new ( variant : Fast ) = Pcg16( variant , seedRng.NextUInt32() )
 
     /// Specify Normal variant with seed and stream.
     new ( variant : Normal , seed : uint32 , stream : uint32 ) = Pcg16( variant , seed , Some stream )
     /// Specify Normal variant with seed.
     new ( variant : Normal , seed : uint32 ) = Pcg16( variant , seed , None )
     /// Specify Normal variant.
-    new ( variant : Normal ) = Pcg16( variant , seed32 () , None )
+    new ( variant : Normal ) = Pcg16( variant , seedRng.NextUInt32() , None )
 
     /// Specify Invertible variant with seed and stream.
     new ( variant : Invertible , seed : uint16 , stream : uint16 ) = Pcg16( variant , seed , Some stream )
     /// Specify Invertible variant with seed.
     new ( variant : Invertible , seed : uint16 ) = Pcg16( variant , seed , None )
     /// Specify Invertible variant.
-    new ( variant : Invertible ) = Pcg16( variant , seed16 () , None )
+    new ( variant : Invertible ) = Pcg16( variant , seedRng.NextUInt16() , None )
 
     /// Use default variant (Normal.XSH_RR) with seed and stream.
     new ( seed : uint32 , stream : uint32 ) = Pcg16( Normal.Default , seed , Some stream )
     /// Use default variant (Normal.XSH_RR) with seed.
     new ( seed : uint32 ) = Pcg16( Normal.Default , seed , None )
     /// Use default variant (Normal.XSH_RR).
-    new () = Pcg16( Normal.Default , seed32 () , None )
+    new () = Pcg16( Normal.Default , seedRng.NextUInt32() , None )
 
     /// Returns name of PCG algorithm for this instance.
     override this.ToString() = name
