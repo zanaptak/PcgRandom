@@ -6,6 +6,7 @@
 
 - Update NextDouble to use 53 random bits instead of 32
 - Add NextDouble and NextBoolean to all generators
+- Replace internal seed logic with [Zanaptak.BufferedCryptoRandom](https://github.com/zanaptak/BufferedCryptoRandom)
 - Enable source link
 - Enable deterministic build
 
