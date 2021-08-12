@@ -109,7 +109,7 @@ type Pcg64
                 outputFn prevState
         Pcg64( name , nextFn )
 
-    /// Specify Fast variant with seed.
+    /// Select Fast variant with specified seed.
     new ( variant : Fast , seed : bigint ) =
         let stepFn = pcg_mcg_128_step_r
         let outputFn , name =
@@ -127,28 +127,28 @@ type Pcg64
                 outputFn state
         Pcg64( name , nextFn )
 
-    /// Specify Fast variant.
+    /// Select Fast variant with random seed.
     new ( variant : Fast ) = Pcg64( variant , seed128 () )
 
-    /// Specify Normal variant with seed and stream.
+    /// Select Normal variant with specified seed and stream.
     new ( variant : Normal , seed : bigint , stream : bigint ) = Pcg64( variant , seed , Some stream )
-    /// Specify Normal variant with seed.
+    /// Select Normal variant with specified seed.
     new ( variant : Normal , seed : bigint ) = Pcg64( variant , seed , None )
-    /// Specify Normal variant.
+    /// Select Normal variant with random seed.
     new ( variant : Normal ) = Pcg64( variant , seed128 () , None )
 
-    /// Specify Invertible variant with seed and stream.
+    /// Select Invertible variant with specified seed and stream.
     new ( variant : Invertible , seed : uint64 , stream : uint64 ) = Pcg64( variant , seed , Some stream )
-    /// Specify Invertible variant with seed.
+    /// Select Invertible variant with specified seed.
     new ( variant : Invertible , seed : uint64 ) = Pcg64( variant , seed , None )
-    /// Specify Invertible variant.
+    /// Select Invertible variant with random seed.
     new ( variant : Invertible ) = Pcg64( variant , seedRng.NextUInt64() , None )
 
-    /// Use default variant (Normal.XSL_RR) with seed and stream.
+    /// Use default variant (Normal.XSL_RR) with specified seed and stream.
     new ( seed : bigint , stream : bigint ) = Pcg64( Normal.Default , seed , Some stream )
-    /// Use default variant (Normal.XSL_RR) with seed.
+    /// Use default variant (Normal.XSL_RR) with specified seed.
     new ( seed : bigint ) = Pcg64( Normal.Default , seed , None )
-    /// Use default variant (Normal.XSL_RR).
+    /// Use default variant (Normal.XSL_RR) with random seed.
     new () = Pcg64( Normal.Default , seed128 () , None )
 
     /// Returns name of PCG algorithm for this instance.

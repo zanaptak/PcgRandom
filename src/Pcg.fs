@@ -43,7 +43,7 @@ type Pcg
 
     /// Create Pcg instance with specified seed.
     new ( seed : int ) = Pcg( uint64 seed )
-    /// Create Pcg instance.
+    /// Create Pcg instance with random seed.
     new() = Pcg( seedRng.NextUInt64() )
 
     // http://prng.di.unimi.it/

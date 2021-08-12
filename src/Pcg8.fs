@@ -89,7 +89,7 @@ type Pcg8
                 outputFn prevState
         Pcg8( name , nextFn )
 
-    /// Specify Fast variant with seed.
+    /// Select Fast variant with specified seed.
     new ( variant : Fast , seed : uint16 ) =
         let stepFn = pcg_mcg_16_step_r
         let outputFn , name =
@@ -106,28 +106,28 @@ type Pcg8
                 outputFn prevState
         Pcg8( name , nextFn )
 
-    /// Specify Fast variant.
+    /// Select Fast variant with random seed.
     new ( variant : Fast ) = Pcg8( variant , seedRng.NextUInt16() )
 
-    /// Specify Normal variant with seed and stream.
+    /// Select Normal variant with specified seed and stream.
     new ( variant : Normal , seed : uint16 , stream : uint16 ) = Pcg8( variant , seed , Some stream )
-    /// Specify Normal variant with seed.
+    /// Select Normal variant with specified seed.
     new ( variant : Normal , seed : uint16 ) = Pcg8( variant , seed , None )
-    /// Specify Normal variant.
+    /// Select Normal variant with random seed.
     new ( variant : Normal ) = Pcg8( variant , seedRng.NextUInt16() , None )
 
-    /// Specify Invertible variant with seed and stream.
+    /// Select Invertible variant with specified seed and stream.
     new ( variant : Invertible , seed : uint8 , stream : uint8 ) = Pcg8( variant , seed , Some stream )
-    /// Specify Invertible variant with seed.
+    /// Select Invertible variant with specified seed.
     new ( variant : Invertible , seed : uint8 ) = Pcg8( variant , seed , None )
-    /// Specify Invertible variant.
+    /// Select Invertible variant with random seed.
     new ( variant : Invertible ) = Pcg8( variant , seedRng.NextUInt8() , None )
 
-    /// Use default variant (Normal.XSH_RR) with seed and stream.
+    /// Use default variant (Normal.XSH_RR) with specified seed and stream.
     new ( seed : uint16 , stream : uint16 ) = Pcg8( Normal.Default , seed , Some stream )
-    /// Use default variant (Normal.XSH_RR) with seed.
+    /// Use default variant (Normal.XSH_RR) with specified seed.
     new ( seed : uint16 ) = Pcg8( Normal.Default , seed , None )
-    /// Use default variant (Normal.XSH_RR).
+    /// Use default variant (Normal.XSH_RR) with random seed.
     new () = Pcg8( Normal.Default , seedRng.NextUInt16() , None )
 
     /// Returns name of PCG algorithm for this instance.

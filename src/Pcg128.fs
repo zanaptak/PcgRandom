@@ -62,11 +62,11 @@ type Pcg128
                 outputFn state
         Pcg128( name , nextFn )
 
-    /// Specify Invertible variant with seed and stream.
+    /// Select Invertible variant with specified seed and stream.
     new ( variant : Invertible , seed : bigint , stream : bigint ) = Pcg128( variant , seed , Some stream )
-    /// Specify Invertible variant with seed.
+    /// Select Invertible variant with specified seed.
     new ( variant : Invertible , seed : bigint ) = Pcg128( variant , seed , None )
-    /// Specify Invertible variant.
+    /// Select Invertible variant with random seed.
     new ( variant : Invertible ) = Pcg128( variant , seed128 () , None )
 
     /// Returns name of PCG algorithm for this instance.

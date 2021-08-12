@@ -1,14 +1,11 @@
 {
   "private": true,
-  "scripts": {
-    "build": "fable-splitter ../src/PcgRandom.fsproj -o bld --commonjs",
-    "testApp": "node bld/PcgRandom.js",
-    "pretest": "fable-splitter PcgRandom.Tests.fsproj -o bld --commonjs",
-    "test": "mocha bld -t 10000"
+    "type": "module",
+    "scripts": {
+        "clean": "dotnet fable clean --outDir bld --yes",
+        "test": "dotnet fable --outDir bld --run mocha bld -t 10000"
   },
   "dependencies": {
-    "fable-compiler": "^2.13.0",
-    "fable-splitter": "^2.2.1",
     "mocha": "^9.0.3"
   }
 }

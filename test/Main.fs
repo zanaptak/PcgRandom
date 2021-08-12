@@ -1,4 +1,4 @@
-module PcgRandom.Tests.NET
+module Main
 
 #if FABLE_COMPILER
 open Fable.Mocha

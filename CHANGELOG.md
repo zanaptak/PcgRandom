@@ -2,7 +2,7 @@
 
 [![GitHub](https://img.shields.io/badge/-github-gray?logo=github)](https://github.com/zanaptak/PcgRandom) [![NuGet](https://img.shields.io/nuget/v/Zanaptak.PcgRandom?logo=nuget)](https://www.nuget.org/packages/Zanaptak.PcgRandom)
 
-## x.x.x (unreleased)
+## 1.0.0 (2021-08-12)
 
 - Update NextDouble to use 53 random bits instead of 32
 - Add NextDouble and NextBoolean to all generators

@@ -39,7 +39,7 @@ let inline rotateRight32 ( value : uint32 ) ( count : int ) =
 let inline rotateRight64 ( value : uint64 ) ( count : int ) =
     ( value >>> count ) ||| ( value <<< ( 64 - count ) )
 
-let seedRng = Zanaptak.BufferedCryptoRandom.BufferedCryptoRandom( allowBrowserFallback = true )
+let seedRng = Zanaptak.BufferedCryptoRandom.BufferedCryptoRandom( fableAllowNonCrypto = true )
 
 let [< Literal >] PCG_DEFAULT_MULTIPLIER_8 = 141uy
 let [< Literal >] PCG_DEFAULT_INCREMENT_8 = 77uy

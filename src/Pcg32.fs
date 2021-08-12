@@ -97,7 +97,7 @@ type Pcg32
                 outputFn prevState
         Pcg32( name , nextFn )
 
-    /// Specify Fast variant with seed.
+    /// Select Fast variant with specified seed.
     new ( variant : Fast , seed : uint64 ) =
         let stepFn = pcg_mcg_64_step_r
         let outputFn , name =
@@ -115,28 +115,28 @@ type Pcg32
                 outputFn prevState
         Pcg32( name , nextFn )
 
-    /// Specify Fast variant.
+    /// Select Fast variant with random seed.
     new ( variant : Fast ) = Pcg32( variant , seedRng.NextUInt64() )
 
-    /// Specify Normal variant with seed and stream.
+    /// Select Normal variant with specified seed and stream.
     new ( variant : Normal , seed : uint64 , stream : uint64 ) = Pcg32( variant , seed , Some stream )
-    /// Specify Normal variant with seed.
+    /// Select Normal variant with specified seed.
     new ( variant : Normal , seed : uint64 ) = Pcg32( variant , seed , None )
-    /// Specify Normal variant.
+    /// Select Normal variant with random seed.
     new ( variant : Normal ) = Pcg32( variant , seedRng.NextUInt64() , None )
 
-    /// Specify Invertible variant with seed and stream.
+    /// Select Invertible variant with specified seed and stream.
     new ( variant : Invertible , seed : uint32 , stream : uint32 ) = Pcg32( variant , seed , Some stream )
-    /// Specify Invertible variant with seed.
+    /// Select Invertible variant with specified seed.
     new ( variant : Invertible , seed : uint32 ) = Pcg32( variant , seed , None )
-    /// Specify Invertible variant.
+    /// Select Invertible variant with random seed.
     new ( variant : Invertible ) = Pcg32( variant , seedRng.NextUInt32() , None )
 
-    /// Use default variant (Normal.XSH_RR) with seed and stream.
+    /// Use default variant (Normal.XSH_RR) with specified seed and stream.
     new ( seed : uint64 , stream : uint64 ) = Pcg32( Normal.Default , seed , Some stream )
-    /// Use default variant (Normal.XSH_RR) with seed.
+    /// Use default variant (Normal.XSH_RR) with specified seed.
     new ( seed : uint64 ) = Pcg32( Normal.Default , seed , None )
-    /// Use default variant (Normal.XSH_RR).
+    /// Use default variant (Normal.XSH_RR) with random seed.
     new () = Pcg32( Normal.Default , seedRng.NextUInt64() , None )
 
     /// Returns name of PCG algorithm for this instance.
