@@ -2,7 +2,7 @@
 
 [![GitHub](https://img.shields.io/badge/-github-gray?logo=github)](https://github.com/zanaptak/PcgRandom) [![NuGet](https://img.shields.io/nuget/v/Zanaptak.PcgRandom?logo=nuget)](https://www.nuget.org/packages/Zanaptak.PcgRandom)
 
-A PCG pseudorandom number generator implementation for .NET and Fable. PCG is a family of simple fast space-efficient statistically good algorithms for random number generation.
+A PCG pseudorandom number generator implementation for [.NET](https://dotnet.microsoft.com/) and [Fable](https://fable.io/). PCG is a family of simple fast space-efficient statistically good algorithms for random number generation.
 
 See the [PCG website](https://www.pcg-random.org/) and [paper](https://www.pcg-random.org/paper.html) for more information.
 
